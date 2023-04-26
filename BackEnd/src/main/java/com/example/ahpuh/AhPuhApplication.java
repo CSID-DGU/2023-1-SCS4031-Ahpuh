@@ -1,0 +1,13 @@
+package com.example.ahpuh;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class AhPuhApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(AhPuhApplication.class, args);
+	}
+
+}

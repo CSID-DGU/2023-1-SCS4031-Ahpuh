@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: demo
+  sql:
+    init:
+      platform: mysql
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?autoReconnect=true&setTimezone=Asia/Seoul
+    username: ${DB_USERNAME} # username
+    password: ${DB_PASSWORD} # password
+    driver-class-name: com.mysql.cj.jdbc.Driver # mysql 8??
+    # driver-class-name: com.mysql.jdbc.Driver # mysql 5??
+
+spring.sql.init.platform: mysql
+server:
+  port: 8080
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    groups-order: DESC
+    operationsSorter: method
+    disable-swagger-default-url: true
+    display-request-duration: true
+  api-docs:
+    path: /api-docs
+  show-actuator: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  paths-to-match:
+    - /**
+
+jwt:
+  secret-key: UwKYibQQgkW7g-*k.ap9kje-wxBHb9wdXoBT4vnt4P3sJWt-Nu # JWT key. ??????
+  admin-key: KlknweNU12231~@#4nLKDNkdln21l412l-=k54jWKMdlkmAWSKLD # JWT key. ??????
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY}
+      secretKey: ${AWS_SECRET_KEY}
+    s3: #????
+      bucket: ${AWS_S3_BUCKET}
+    region: #S3 ??
+      static: ${AWS_S3_REGION}
+    stack:
+      auto: false

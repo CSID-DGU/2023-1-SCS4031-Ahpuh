@@ -1,4 +1,9 @@
 spring:
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
   application:
     name: demo
   sql:
@@ -31,8 +36,7 @@ springdoc:
     - /**
 
 jwt:
-  secret-key: UwKYibQQgkW7g-*k.ap9kje-wxBHb9wdXoBT4vnt4P3sJWt-Nu # JWT key. ??????
-  admin-key: KlknweNU12231~@#4nLKDNkdln21l412l-=k54jWKMdlkmAWSKLD # JWT key. ??????
+  secret: ${JWT_SECRET_KEY}
 cloud:
   aws:
     credentials:

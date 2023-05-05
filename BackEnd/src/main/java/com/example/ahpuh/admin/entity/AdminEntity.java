@@ -2,10 +2,13 @@ package com.example.ahpuh.admin.entity;
 
 import com.example.ahpuh.cctv.entity.CctvEntity;
 import com.example.ahpuh.user.entity.UserEntity;
+import com.example.ahpuh.util.BaseTimeEntity;
+import com.example.ahpuh.util.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -15,8 +18,9 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@DynamicInsert
 @Table(name = "admin")
-public class AdminEntity {
+public class AdminEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long adminIdx;
@@ -36,7 +40,7 @@ public class AdminEntity {
     @Column(nullable = false, length = 100)
     private String poolAddress;
 
-    @Column(nullable = false, columnDefinition = "varchar(10) default 'active'")
+    @Column(columnDefinition = "varchar(10) default 'ACTIVE'")
     private String status;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "userIdx")
@@ -45,13 +49,17 @@ public class AdminEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cctvIdx")
     private List<CctvEntity> cctvEntities = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
     @Builder
-    public AdminEntity(String email, String pwd, String poolName, String poolNum, String poolAddress, String status){
+    public AdminEntity(String email, String pwd, String poolName, String poolNum, String poolAddress, Role role){
         this.email = email;
         this.pwd = pwd;
         this.poolName = poolName;
         this.poolNum = poolNum;
         this.poolAddress = poolAddress;
-        this.status = status;
+        this.role = role;
     }
 }

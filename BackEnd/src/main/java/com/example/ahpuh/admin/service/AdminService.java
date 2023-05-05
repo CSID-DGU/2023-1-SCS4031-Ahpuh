@@ -1,4 +1,5 @@
 package com.example.ahpuh.admin.service;
+import com.example.ahpuh.admin.dto.PostLoginReq;
 import com.example.ahpuh.jwt.TokenProvider;
 import com.example.ahpuh.jwt.dto.TokenDto;
 import com.example.ahpuh.jwt.entity.RefreshTokenEntity;
@@ -17,6 +18,8 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 import static com.example.ahpuh.util.ValidationRegex.isRegexEmail;
 
@@ -64,6 +67,38 @@ public class AdminService {
         adminRepository.save(adminEntity);
         return token(admin);
 
+    }
+
+    public TokenDto signIn(PostLoginReq admin) throws BaseException {
+        if(!isRegexEmail(admin.getEmail())){
+            throw new BaseException(BaseResponseStatus.POST_ADMIN_INVALID_EMAIL);
+        }
+
+        Optional<AdminEntity> optional = Optional.ofNullable(adminRepository.findByEmail(admin.getEmail())
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.FAILED_TO_LOGIN)));
+        AdminEntity adminEntity = optional.get();
+
+        if(passwordEncoder.matches(admin.getPwd(), adminEntity.getPwd())) {
+            return loginToken(admin);
+        }
+        else{
+            throw new BaseException(BaseResponseStatus.POST_USERS_INVALID_PASSWORD);
+        }
+    }
+
+    public TokenDto loginToken(PostLoginReq user){
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPwd());
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+
+        TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
+
+        RefreshTokenEntity refreshToken = RefreshTokenEntity.builder()
+                .key(authentication.getName())
+                .value(tokenDto.getRefreshToken())
+                .build();
+        refreshTokenRepository.save(refreshToken);
+
+        return tokenDto;
     }
 
     public boolean isHaveEmail(String email) { return adminRepository.existsByEmail(email); }

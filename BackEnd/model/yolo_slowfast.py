@@ -2,6 +2,7 @@ import torch
 import numpy as np
 import os,cv2,time,torch,random,pytorchvideo,warnings,argparse,math
 warnings.filterwarnings("ignore",category=UserWarning)
+
 from pytorchvideo.transforms.functional import (
     uniform_temporal_subsample,
     short_side_scale_with_boxes,
@@ -81,9 +82,13 @@ def plot_one_box(x, img, color=[100,100,100], text_info="None",
                  velocity=None, thickness=1, fontsize=0.5, fontthickness=1):
     # Plots one bounding box on image img
     c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))
+    c3=int((int(x[0])+int(x[2]))/2),int((int(x[1])+int(x[3]))/2)
+    c4, c5 = (max(0,int(int(x[0])-(int(x[2])-int(x[0]))/2)),max(0,int(int(x[1])-(int(x[3])-int(x[1]))/2))),(int(int(x[2])+(int(x[2])-int(x[0]))/2),int(int(x[3])+(int(x[3])-int(x[1]))/2))
+    cv2.line(img,c3,c3,color,5)
     cv2.rectangle(img, c1, c2, color, thickness, lineType=cv2.LINE_AA)
     t_size = cv2.getTextSize(text_info, cv2.FONT_HERSHEY_TRIPLEX, fontsize , fontthickness+2)[0]
     cv2.rectangle(img, c1, (c1[0] + int(t_size[0]), c1[1] + int(t_size[1]*1.45)), color, -1)
+    cv2.rectangle(img, c4, c5, color, thickness, lineType=cv2.LINE_AA)
     cv2.putText(img, text_info, (c1[0], c1[1]+t_size[1]+2), 
                 cv2.FONT_HERSHEY_TRIPLEX, fontsize, [255,255,255], fontthickness)
     return img
@@ -92,10 +97,15 @@ def deepsort_update(Tracker, pred, xywh, np_img):
     outputs = Tracker.update(xywh, pred[:,4:5],pred[:,5].tolist(),cv2.cvtColor(np_img,cv2.COLOR_BGR2RGB))
     return outputs
 
+
+
+
+
 def save_yolopreds_tovideo(yolo_preds, id_to_ava_labels, color_map, output_video, vis=False):
     for i, (im, pred) in enumerate(zip(yolo_preds.ims, yolo_preds.pred)):
         im=cv2.cvtColor(im,cv2.COLOR_BGR2RGB)
         if pred.shape[0]:
+            #print(pred[:,:4])
             for j, (*box, cls, trackid, vx, vy) in enumerate(pred):
                 if int(cls) != 0:
                     ava_label = ''
@@ -105,8 +115,12 @@ def save_yolopreds_tovideo(yolo_preds, id_to_ava_labels, color_map, output_video
                     ava_label = 'Unknow'
                 text = '{} {} {}'.format(int(trackid),yolo_preds.names[int(cls)],ava_label)
                 color = color_map[int(cls)]
-                im = plot_one_box(box,im,color,text)
+                if yolo_preds.names[int(cls)]=='person':
+                    im = plot_one_box(box,im,color,text)
+                    print((box[0]+box[2])/2,(box[1]+box[3])/2)
+                    
         im = im.astype(np.uint8)
+        im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
         output_video.write(im)
         if vis:
             im=cv2.cvtColor(im,cv2.COLOR_RGB2BGR)
@@ -170,7 +184,6 @@ def main(config):
                     slowfaster_preds = slowfaster_preds.cpu()
                 for tid,avalabel in zip(yolo_preds.pred[0][:,5].tolist(), np.argmax(slowfaster_preds, axis=1).tolist()):
                     id_to_ava_labels[tid] = ava_labelnames[avalabel+1]
-                
         save_yolopreds_tovideo(yolo_preds, id_to_ava_labels, coco_color_map, outputvideo, config.show)
     print("total cost: {:.3f} s, video length: {} s".format(time.time()-a, cap.idx / 25))
     

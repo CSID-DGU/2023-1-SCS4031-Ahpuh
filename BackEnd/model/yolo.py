@@ -111,7 +111,8 @@ def save_yolopreds_tovideo(yolo_preds, id_to_ava_labels, color_map, output_video
                     ava_label = 'Unknow'
                 text = '{} {} {}'.format(int(trackid),yolo_preds.names[int(cls)],ava_label)
                 color = color_map[int(cls)]
-                im = plot_one_box(box,im,color,text)    
+                if yolo_preds.names[int(cls)]=='person':
+                    im = plot_one_box(box,im,color,text)
                     
         im = im.astype(np.uint8)
         im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)

@@ -79,7 +79,7 @@ def ava_inference_transform(
 
 def plot_one_box(x, img, color=[100,100,100], text_info="None",
                  velocity=None, thickness=1, fontsize=0.5, fontthickness=1):
-    # Plots one bounding box on image img
+    # Plots one bounding box on image img 
     c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))
     cv2.rectangle(img, c1, c2, color, thickness, lineType=cv2.LINE_AA)
     t_size = cv2.getTextSize(text_info, cv2.FONT_HERSHEY_TRIPLEX, fontsize , fontthickness+2)[0]

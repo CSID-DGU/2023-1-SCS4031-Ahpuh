@@ -15,6 +15,10 @@ spring:
     password: ${DB_PASSWORD} # password
     driver-class-name: com.mysql.cj.jdbc.Driver # mysql 8??
     # driver-class-name: com.mysql.jdbc.Driver # mysql 5??
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 spring.sql.init.platform: mysql
 server:

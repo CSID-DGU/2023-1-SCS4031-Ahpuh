@@ -16,17 +16,20 @@ public enum BaseResponseStatus {
     FAILED_TO_LOGIN(false, 2007, "없는 아이디이거나 비밀번호가 틀렸습니다."),
     POST_ADMIN_EMPTY(false, 2008, "이메일 또는 비밀번호를 입력하지 않았습니다."),
     POST_ADMIN_INVALID_EMAIL(false, 2009, "유효하지 않은 이메일 형식입니다."),
+    NOT_FIND_ADMIN(false, 2010, "해당 관리자 정보를 찾을 수 없습니다."),
 
     /*
      * 4000: [POST]
      * */
     PASSWORD_ENCRYPTION_ERROR(false, 4001, "비밀번호 암호화에 실패했습니다."),
     DATABASE_ERROR(false, 4002, "데이터베이스 연결에 실패하였습니다."),
+    IMAGE_UPLOAD_NONE(false, 4003, "업로드할 이미지가 없습니다."),
+    WRONG_IMAGE_FORMAT(false, 4004, "옳지 않은 이미지 형식입니다."),
 
     /*
      * 5000: database error
      * */
-
+    IMAGE_UPLOAD_ERROR(false, 5001, "이미지 업로드 에러가 발생하였습니다."),
     /*
      * 7000 : PATCH
      * */

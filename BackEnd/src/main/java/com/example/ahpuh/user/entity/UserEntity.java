@@ -1,10 +1,12 @@
 package com.example.ahpuh.user.entity;
 
 import com.example.ahpuh.admin.entity.AdminEntity;
+import com.example.ahpuh.util.BaseTimeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 
@@ -12,8 +14,9 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@DynamicInsert
 @Table(name = "user")
-public class UserEntity {
+public class UserEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userIdx;
@@ -37,19 +40,16 @@ public class UserEntity {
     @Column(nullable = true)
     private String address;
 
-    @Column(nullable = false, columnDefinition = "varchar(10) default 'ACTIVE'")
+    @Column(columnDefinition = "varchar(10) default 'ACTIVE'")
     private String lectureStatus;
 
-    @Column(nullable = false, columnDefinition = "varchar(10) default 'active'")
+    @Column(columnDefinition = "varchar(10) default 'ACTIVE'")
     private String status;
 
     @Builder
-    public UserEntity(String name, String phoneNum, String gender, String age, String address, String lectureStatus, String status){
+    public UserEntity(String name, String phoneNum, String lectureStatus, String status){
         this.name = name;
         this.phoneNum = phoneNum;
-        this.gender = gender;
-        this.age = age;
-        this.address = address;
         this.lectureStatus = lectureStatus;
         this.status = status;
     }

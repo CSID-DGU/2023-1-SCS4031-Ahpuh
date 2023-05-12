@@ -1,8 +1,10 @@
 package com.example.ahpuh.cctv.entity;
 
+import com.example.ahpuh.util.BaseTimeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 
@@ -10,8 +12,9 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@DynamicInsert
 @Table(name = "position")
-public class PositionEntity {
+public class PositionEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long positionIdx;
@@ -26,6 +29,6 @@ public class PositionEntity {
     @Column(nullable = false)
     private Float yPos;
 
-    @Column(nullable = false, columnDefinition = "varchar(10) default 'active'")
+    @Column(columnDefinition = "varchar(10) default 'ACTIVE'")
     private String status;
 }

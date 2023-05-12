@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +41,9 @@ public class AdminEntity extends BaseTimeEntity {
     @Column(nullable = false, length = 100)
     private String poolAddress;
 
+    @Column(length = 100)
+    private String poolImg;
+
     @Column(columnDefinition = "varchar(10) default 'ACTIVE'")
     private String status;
 
@@ -49,17 +53,30 @@ public class AdminEntity extends BaseTimeEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cctvIdx")
     private List<CctvEntity> cctvEntities = new ArrayList<>();
 
+    @Column(nullable = false)
+    private LocalDateTime accessTime;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
 
     @Builder
-    public AdminEntity(String email, String pwd, String poolName, String poolNum, String poolAddress, Role role){
+    public AdminEntity(String email, String pwd, String poolName, String poolNum, String poolAddress, String poolImg, LocalDateTime accessTime, Role role){
         this.email = email;
         this.pwd = pwd;
         this.poolName = poolName;
         this.poolNum = poolNum;
+        this.poolImg = poolImg;
+        this.accessTime = accessTime;
         this.poolAddress = poolAddress;
         this.role = role;
+    }
+
+    public void access() {
+        this.accessTime = LocalDateTime.now();
+    }
+
+    public void uploadImg(String poolImg) {
+        this.poolImg = poolImg;
     }
 }

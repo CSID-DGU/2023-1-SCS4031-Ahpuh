@@ -1,9 +1,12 @@
 package com.example.ahpuh.cctv.entity;
 
 import com.example.ahpuh.admin.entity.AdminEntity;
+import com.example.ahpuh.util.BaseTimeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import javax.persistence.*;
 
@@ -11,8 +14,9 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@DynamicInsert
 @Table(name = "cctv")
-public class CctvEntity {
+public class CctvEntity extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,6 +35,6 @@ public class CctvEntity {
     @Column(nullable = false, columnDefinition = "text")
     private String cctvImage;
 
-    @Column(nullable = false, columnDefinition = "varchar(10) default 'active'")
+    @Column(columnDefinition = "varchar(10) default 'ACTIVE'")
     private String status;
 }

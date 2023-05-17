@@ -11,6 +11,8 @@ from torchvision.transforms._functional_video import normalize
 from pytorchvideo.data.ava import AvaLabeledVideoFramePaths
 from pytorchvideo.models.hub import slowfast_r50_detection
 from deep_sort.deep_sort import DeepSort
+import datetime
+from collections import deque
 
 
 class MyVideoCapture:
@@ -117,7 +119,7 @@ def save_yolopreds_tovideo(yolo_preds, id_to_ava_labels, color_map, output_video
                 color = color_map[int(cls)]
                 if yolo_preds.names[int(cls)]=='person':
                     im = plot_one_box(box,im,color,text)
-                    print((box[0]+box[2])/2,(box[1]+box[3])/2)
+                    #print((box[0]+box[2])/2,(box[1]+box[3])/2)
                     
         im = im.astype(np.uint8)
         im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
@@ -129,6 +131,8 @@ def save_yolopreds_tovideo(yolo_preds, id_to_ava_labels, color_map, output_video
 def main(config):
     device = config.device
     imsize = config.imsize
+    swim_list=deque()
+    
     
     model = torch.hub.load('ultralytics/yolov5', 'yolov5l6').to(device)
     model.conf = config.conf
@@ -182,9 +186,37 @@ def main(config):
                 with torch.no_grad():
                     slowfaster_preds = video_model(inputs, inp_boxes.to(device))
                     slowfaster_preds = slowfaster_preds.cpu()
-                for tid,avalabel in zip(yolo_preds.pred[0][:,5].tolist(), np.argmax(slowfaster_preds, axis=1).tolist()):
+                for tid,avalabel,location in zip(yolo_preds.pred[0][:,5].tolist(), np.argmax(slowfaster_preds, axis=1).tolist(), yolo_preds.pred[0][:,0:4]):
                     id_to_ava_labels[tid] = ava_labelnames[avalabel+1]
+                    d_code=False
+                    if ava_labelnames[avalabel+1]=='swim':
+                        #print(ava_labelnames[avalabel+1],location,datetime.datetime.now())
+                        if swim_list:
+                            center_x=int((int(location[0])+int(location[2]))/2)
+                            center_y=int((int(location[1])+int(location[3]))/2)
+                            if (datetime.datetime.now()-swim_list[0][0]).seconds>60: #시간 지나면 삭제
+                                swim_list.popleft()
+                            for index,i in enumerate(swim_list):
+                                if center_x>=i[1][0] and center_x<=i[1][2] and center_y >=i[1][1] and center_y <=i[1][3]:
+                                    swim_list[index][2]+=1
+                                    if swim_list[index][2]==1:
+                                        print('익사 1단계')
+                                    elif swim_list[index][2]==2:
+                                        print('익사 2단계')
+                                    elif swim_list[index][2]>=3:
+                                        print('익사 3단계')
+                                    else:
+                                        pass
+                                    d_code=True
+                            if d_code==False:
+                                print('등록')
+                                swim_list.append([datetime.datetime.now(),location,0])
+                        else:
+                            print('등록')
+                            swim_list.append([datetime.datetime.now(),location,0])
+
         save_yolopreds_tovideo(yolo_preds, id_to_ava_labels, coco_color_map, outputvideo, config.show)
+    print(swim_list)
     print("total cost: {:.3f} s, video length: {} s".format(time.time()-a, cap.idx / 25))
     
     cap.release()

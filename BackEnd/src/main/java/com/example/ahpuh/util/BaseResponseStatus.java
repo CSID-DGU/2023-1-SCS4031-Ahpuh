@@ -17,6 +17,7 @@ public enum BaseResponseStatus {
     POST_ADMIN_EMPTY(false, 2008, "이메일 또는 비밀번호를 입력하지 않았습니다."),
     POST_ADMIN_INVALID_EMAIL(false, 2009, "유효하지 않은 이메일 형식입니다."),
     NOT_FIND_ADMIN(false, 2010, "해당 관리자 정보를 찾을 수 없습니다."),
+    NOT_FIND_CCTV(false, 2011, "CCTV 정보를 찾을 수 없습니다."),
 
     /*
      * 4000: [POST]

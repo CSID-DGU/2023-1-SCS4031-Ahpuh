@@ -3,6 +3,7 @@ package com.example.ahpuh.cctv.entity;
 import com.example.ahpuh.admin.entity.AdminEntity;
 import com.example.ahpuh.util.BaseTimeEntity;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
@@ -15,6 +16,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamicInsert
+@Builder
 @Table(name = "cctv")
 public class CctvEntity extends BaseTimeEntity {
 
@@ -37,4 +39,12 @@ public class CctvEntity extends BaseTimeEntity {
 
     @Column(columnDefinition = "varchar(10) default 'ACTIVE'")
     private String status;
+
+    public void uploadImg(String cctvImage) {
+        this.cctvImage = cctvImage;
+    }
+
+    public void uploadLine(Long lineNum){
+        this.lineNum = lineNum;
+    }
 }

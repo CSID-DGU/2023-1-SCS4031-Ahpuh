@@ -1,9 +1,8 @@
 package com.example.ahpuh.admin.service;
-import com.example.ahpuh.admin.dto.PostAdminRes;
-import com.example.ahpuh.admin.dto.PostCctvImgRes;
-import com.example.ahpuh.admin.dto.PostLoginReq;
+import com.example.ahpuh.admin.dto.*;
+import com.example.ahpuh.cctv.entity.CctvEntity;
+import com.example.ahpuh.cctv.repository.CctvRepository;
 import com.example.ahpuh.jwt.repository.RefreshTokenRepository;
-import com.example.ahpuh.admin.dto.PostAdminReq;
 import com.example.ahpuh.admin.entity.AdminEntity;
 import com.example.ahpuh.admin.repository.AdminRepository;
 import com.example.ahpuh.jwt.service.JwtService;
@@ -26,14 +25,11 @@ import static com.example.ahpuh.util.ValidationRegex.isRegexEmail;
 
 @Service
 @RequiredArgsConstructor
-@AllArgsConstructor
 public class AdminService {
-    @Autowired
-    private AdminRepository adminRepository;
-    @Autowired
-    private RefreshTokenRepository refreshTokenRepository;
-    @Autowired
-    private JwtService jwtService;
+    private final AdminRepository adminRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final CctvRepository cctvRepository;
+    private final JwtService jwtService;
 
     public void signUp(PostAdminReq admin) throws BaseException {
         if(admin.getEmail() == null || admin.getPwd() == null){
@@ -83,8 +79,29 @@ public class AdminService {
         Long adminIdx = jwtService.getAdminId();
         AdminEntity admin = adminRepository.findByAdminIdx(adminIdx)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.NOT_FIND_ADMIN));
-        admin.uploadImg(cctvImg);
-        adminRepository.save(admin);
+        createCCTV(admin, cctvImg);
         return new PostCctvImgRes(cctvImg);
+    }
+
+    public void createCCTV(AdminEntity admin, String cctvImg) {
+        CctvEntity cctv = CctvEntity.builder()
+                .cctvImage(cctvImg)
+                .cctvFile("cctv file")
+                .lineNum(0L)
+                .adminIdx(admin)
+                .build();
+        cctvRepository.save(cctv);
+    }
+
+    public PostCctvLineRes uploadLine(Long lineNum) throws BaseException {
+        Long adminIdx = jwtService.getAdminId();
+        AdminEntity admin = adminRepository.findByAdminIdx(adminIdx)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.NOT_FIND_ADMIN));
+        // cctvIdx 조회 후 저장
+        CctvEntity cctv = cctvRepository.findByAdminIdx(admin)
+                        .orElseThrow(() -> new BaseException(BaseResponseStatus.NOT_FIND_CCTV));
+        cctv.uploadLine(lineNum);
+        cctvRepository.save(cctv);
+        return new PostCctvLineRes(lineNum);
     }
 }

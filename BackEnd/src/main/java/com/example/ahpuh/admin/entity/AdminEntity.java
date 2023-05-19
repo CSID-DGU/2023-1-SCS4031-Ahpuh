@@ -41,9 +41,6 @@ public class AdminEntity extends BaseTimeEntity {
     @Column(nullable = false, length = 100)
     private String poolAddress;
 
-    @Column(length = 100)
-    private String poolImg;
-
     @Column(columnDefinition = "varchar(10) default 'ACTIVE'")
     private String status;
 
@@ -61,12 +58,11 @@ public class AdminEntity extends BaseTimeEntity {
     private Role role;
 
     @Builder
-    public AdminEntity(String email, String pwd, String poolName, String poolNum, String poolAddress, String poolImg, LocalDateTime accessTime, Role role){
+    public AdminEntity(String email, String pwd, String poolName, String poolNum, String poolAddress, LocalDateTime accessTime, Role role){
         this.email = email;
         this.pwd = pwd;
         this.poolName = poolName;
         this.poolNum = poolNum;
-        this.poolImg = poolImg;
         this.accessTime = accessTime;
         this.poolAddress = poolAddress;
         this.role = role;
@@ -76,7 +72,4 @@ public class AdminEntity extends BaseTimeEntity {
         this.accessTime = LocalDateTime.now();
     }
 
-    public void uploadImg(String poolImg) {
-        this.poolImg = poolImg;
-    }
 }

@@ -197,6 +197,7 @@ def main(config):
                             if (datetime.datetime.now()-swim_list[0][0]).seconds>60: #시간 지나면 삭제
                                 swim_list.popleft()
                             for index,i in enumerate(swim_list):
+                                
                                 if center_x>=i[1][0] and center_x<=i[1][2] and center_y >=i[1][1] and center_y <=i[1][3]:
                                     swim_list[index][2]+=1
                                     if swim_list[index][2]==1:
@@ -210,10 +211,14 @@ def main(config):
                                     d_code=True
                             if d_code==False:
                                 print('등록')
-                                swim_list.append([datetime.datetime.now(),location,0])
+                                find_x1, find_y1 = max(0,int(int(location[0])-(int(location[2])-int(location[0]))/2)), max(0,int(int(location[1])-(int(location[3])-int(location[1]))/2))
+                                find_x2, find_y2 = int(int(location[2])+(int(location[2])-int(location[0]))/2),int(int(location[3])+(int(location[3])-int(location[1]))/2)
+                                swim_list.append([datetime.datetime.now(),[find_x1,find_y1,find_x2, find_y2],0])
                         else:
                             print('등록')
-                            swim_list.append([datetime.datetime.now(),location,0])
+                            find_x1, find_y1 = max(0,int(int(location[0])-(int(location[2])-int(location[0]))/2)), max(0,int(int(location[1])-(int(location[3])-int(location[1]))/2))
+                            find_x2, find_y2 = int(int(location[2])+(int(location[2])-int(location[0]))/2),int(int(location[3])+(int(location[3])-int(location[1]))/2)
+                            swim_list.append([datetime.datetime.now(),[find_x1,find_y1,find_x2, find_y2],0])
 
         save_yolopreds_tovideo(yolo_preds, id_to_ava_labels, coco_color_map, outputvideo, config.show)
     print(swim_list)

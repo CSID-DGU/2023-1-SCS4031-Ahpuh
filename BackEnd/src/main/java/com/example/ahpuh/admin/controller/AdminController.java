@@ -1,9 +1,6 @@
 package com.example.ahpuh.admin.controller;
 
-import com.example.ahpuh.admin.dto.PostAdminReq;
-import com.example.ahpuh.admin.dto.PostAdminRes;
-import com.example.ahpuh.admin.dto.PostCctvImgRes;
-import com.example.ahpuh.admin.dto.PostLoginReq;
+import com.example.ahpuh.admin.dto.*;
 import com.example.ahpuh.admin.service.AdminService;
 import com.example.ahpuh.admin.service.S3Service;
 import com.example.ahpuh.jwt.dto.TokenDto;
@@ -73,5 +70,13 @@ public class AdminController {
         return new BaseResponse<>(postCctvImgRes);
     }
 
+    @Operation(summary = "post cctv 레인 개수", description = "관리자 초기 설정 - cctv 레인 개수 전달")
+    @Parameter(name = "cctvLine", description = "레인 개수", example = "4")
+    @ResponseBody
+    @PostMapping("/cctv/line")
+    public BaseResponse<PostCctvLineRes> uploadLine(@RequestBody PostLineReq postLineReq) throws BaseException {
+        PostCctvLineRes postCctvLineRes = adminService.uploadLine(postLineReq.getLineNum());
+        return new BaseResponse<>(postCctvLineRes);
+    }
 
 }

@@ -59,14 +59,14 @@ public class AdminController {
         }
     }
 
-    @Operation(summary = "post cctv Img", description = "관리자 초기 설정 - cctv 이미지 업로드")
-    @Parameter(name = "cctvImg", description = "업로드할 cctv 이미지", example = "cctv 이미지")
+    @Operation(summary = "post cctv Img & video", description = "관리자 초기 설정 - cctv 이미지, 비디오 업로드")
+    @Parameter(name = "cctvFile", description = "업로드할 cctv 이미지와 동영상", example = "cctv 이미지, 동영상")
     @ResponseBody
-    @PostMapping("/cctv/img")
-    public BaseResponse<PostCctvImgRes> uploadImg(@RequestPart(value = "cctvImg") MultipartFile multipartFile) throws BaseException {
-        String cctvImg = s3Service.uploadImg(multipartFile);
-        PostCctvImgRes postCctvImgRes = adminService.uploadCctvImg(cctvImg);
-        return new BaseResponse<>(postCctvImgRes);
+    @PostMapping("/cctv/file")
+    public BaseResponse<PostCctvFileRes> uploadFile(@RequestPart(value = "cctvFile") MultipartFile multipartFile) throws BaseException {
+        String cctvImg = s3Service.uploadFile(multipartFile);
+        PostCctvFileRes postCctvFileRes = adminService.uploadCctvFile(cctvImg);
+        return new BaseResponse<>(postCctvFileRes);
     }
 
     @Operation(summary = "post cctv 레인 개수", description = "관리자 초기 설정 - cctv 레인 개수 전달")

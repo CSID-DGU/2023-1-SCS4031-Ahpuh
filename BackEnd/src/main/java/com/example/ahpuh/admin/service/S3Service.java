@@ -50,8 +50,8 @@ public class S3Service {
                 .build();
     }
 
-    public String uploadImg(MultipartFile multipartFile) throws BaseException {
-        String imgUrl = "";
+    public String uploadFile(MultipartFile multipartFile) throws BaseException {
+        String fileUrl = "";
         if(multipartFile.isEmpty()){
             throw new BaseException(BaseResponseStatus.IMAGE_UPLOAD_NONE);
         }
@@ -64,12 +64,12 @@ public class S3Service {
             try(InputStream inputStream = multipartFile.getInputStream()) {
                 s3Client.putObject(new PutObjectRequest(bucket+"/cctvImg", fileName, inputStream, objectMetadata)
                         .withCannedAcl(CannedAccessControlList.PublicRead));
-                imgUrl = s3Client.getUrl(bucket+"/cctvImg", fileName).toString();
+                fileUrl = s3Client.getUrl(bucket+"/cctvImg", fileName).toString();
             } catch(IOException e) {
                 throw new BaseException(BaseResponseStatus.IMAGE_UPLOAD_ERROR);
             }
         }
-        return imgUrl;
+        return fileUrl;
     }
 
     // 이미지 파일명 중복 방지
@@ -88,6 +88,8 @@ public class S3Service {
         fileValidate.add(".PNG");
         fileValidate.add(".svg");
         fileValidate.add(".SVG");
+        fileValidate.add(".mp4");
+        fileValidate.add(".MP4");
         String idxFileName = fileName.substring(fileName.lastIndexOf("."));
         if (!fileValidate.contains(idxFileName)) {
             throw new BaseException(BaseResponseStatus.WRONG_IMAGE_FORMAT);

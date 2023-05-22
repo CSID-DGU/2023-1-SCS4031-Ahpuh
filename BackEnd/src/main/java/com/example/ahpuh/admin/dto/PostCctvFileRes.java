@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostCctvImgRes {
+public class PostCctvFileRes {
     private String cctvImg;
 }

@@ -4,6 +4,7 @@ import com.example.ahpuh.cctv.entity.CctvEntity;
 import com.example.ahpuh.user.entity.UserEntity;
 import com.example.ahpuh.util.BaseTimeEntity;
 import com.example.ahpuh.util.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,9 +45,11 @@ public class AdminEntity extends BaseTimeEntity {
     @Column(columnDefinition = "varchar(10) default 'ACTIVE'")
     private String status;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "userIdx")
     private List<UserEntity> userEntities = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cctvIdx")
     private List<CctvEntity> cctvEntities = new ArrayList<>();
 

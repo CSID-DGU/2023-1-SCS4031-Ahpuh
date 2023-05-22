@@ -72,12 +72,12 @@ public class AdminService {
     public boolean isHaveEmail(String email) { return adminRepository.existsByEmail(email); }
 
 
-    public PostCctvImgRes uploadCctvImg(String cctvImg) throws BaseException {
+    public PostCctvFileRes uploadCctvFile(String cctvImg) throws BaseException {
         Long adminIdx = jwtService.getAdminId();
         AdminEntity admin = adminRepository.findByAdminIdx(adminIdx)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.NOT_FIND_ADMIN));
         createCCTV(admin, cctvImg);
-        return new PostCctvImgRes(cctvImg);
+        return new PostCctvFileRes(cctvImg);
     }
 
     public void createCCTV(AdminEntity admin, String cctvImg) {

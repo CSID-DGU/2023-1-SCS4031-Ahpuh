@@ -186,9 +186,9 @@ def main(config):
     video_model = get_model(name='slowfast_4x16_resnet50_kinetics400', nclass=3)
     video_model.load_parameters("net.params")
     
-    deepsort_tracker = DeepSort("deep_sort/deep_sort/deep/checkpoint/ckpt.t7")    
+    deepsort_tracker = DeepSort("BackEnd/model/deep_sort/deep_sort/deep/checkpoint/ckpt.t7")    
     # ava_labelnames,_ = AvaLabeledVideoFramePaths.read_label_map("selfutils/temp.pbtxt")
-    swim_labelnames,_ = AvaLabeledVideoFramePaths.read_label_map("selfutils/swim.pbtxt")
+    swim_labelnames,_ = AvaLabeledVideoFramePaths.read_label_map("BackEnd/model/selfutils/swim.pbtxt")
     coco_color_map = [[random.randint(0, 255) for _ in range(3)] for _ in range(80)]
 
     vide_save_path = config.output

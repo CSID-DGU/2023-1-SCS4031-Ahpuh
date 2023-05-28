@@ -17,13 +17,8 @@
 
 ### 모델 데모 실행 방법
 0. `cd 2023-1-SCS4031-Ahpuh`
-1. deep sort의 pretrained 모델 다운로드 
-```
-wget -O BackEnd/model/deep_sort/deep_sort/deep/checkpoint/ckpt.t7 https://drive.google.com/file/d/1fa8QonVhFZG332Y22I5IuA43JgVp-cm-/view?usp=sharing
-```
-2. slowfast의 pretrained 모델 다운로드
-```
-wget -O net.params https://dongguk0-my.sharepoint.com/:u:/g/personal/andh1014_dongguk_edu/EV7bKpaqYO1GsPtC9n7PaN8Bi7MqNSTLAB1vtYaDdq33EA?e=fPoiag
+1. deep sort의 pretrained 모델 준비 : [여기](https://drive.google.com/drive/folders/1xhG0kRH1EX5B9_Iz8gQJb7UNnn_riXi6)서 받거나, dcloud-global-dir에서 ckpt.t7 파일 가져와서 현재 디렉토리에 넣기
+2. slowfast의 pretrained 모델 준비 : dcloud-global-dir에서 net.params 파일 가져와서 현재 디렉토리에 넣기
 ```
 3. 가상환경 생성 & 패키지 설치
 ```

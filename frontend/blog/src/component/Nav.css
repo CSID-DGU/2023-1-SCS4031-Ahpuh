@@ -1,0 +1,19 @@
+.navbar{
+    width: 100%;
+    background-color: white;
+    padding: 15px 5px;
+    text-align: right;
+}
+.logo{
+    text-align: left;
+    float: left;
+}
+.navbarMenu{
+    color: black;
+    margin: 10px;
+    text-decoration: none;
+}
+.Aupuh{
+    font-size: large;
+    font-weight: 15px;
+}

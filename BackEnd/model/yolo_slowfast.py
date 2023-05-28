@@ -14,6 +14,11 @@ from deep_sort.deep_sort import DeepSort
 import datetime
 from collections import deque
 
+from gluoncv.model_zoo import get_model
+from gluoncv.utils.filesystem import try_import_decord
+from gluoncv.data.transforms import video
+from mxnet import gluon, nd, init, context
+decord = try_import_decord()
 
 class MyVideoCapture:
     
@@ -80,6 +85,42 @@ def ava_inference_transform(
     
     return clip, torch.from_numpy(boxes), roi_boxes
 
+def swim_inference_transform(
+    clip, 
+    boxes,
+    num_frames = 64, #if using slowfast_r50_detection, change this to 32, 4 for slow 
+    crop_size = 1080, 
+    data_mean = [0.45, 0.45, 0.45], 
+    data_std = [0.225, 0.225, 0.225],
+    slow_fast_alpha = 4, #if using slowfast_r50_detection, change this to 4, None for slow
+):
+    boxes = np.array(boxes)
+    roi_boxes = boxes.copy()
+    clip = torch.tensor(clip)
+    clip = uniform_temporal_subsample(clip, num_frames)
+    clip = clip.float()
+    height, width = clip.shape[2], clip.shape[3]
+    boxes = clip_boxes_to_image(boxes, height, width)
+    clip, boxes = short_side_scale_with_boxes(clip,size=crop_size,boxes=boxes,)
+    boxes = clip_boxes_to_image(boxes, clip.shape[2],  clip.shape[3])
+    clip = normalize(clip,
+        np.array(data_mean, dtype=np.float32),
+        np.array(data_std, dtype=np.float32),) 
+    boxes = clip_boxes_to_image(boxes, clip.shape[2],  clip.shape[3])
+    clip = np.transpose(clip, (1, 2 , 3, 0))
+    
+    fast_frame_id_list = range(0, 64, 2)
+    slow_frame_id_list = range(0, 64, 16)
+    frame_id_list = list(fast_frame_id_list) + list(slow_frame_id_list)
+    clip_input = [clip[vid, :, :, :] for vid, _ in enumerate(frame_id_list)]
+
+    transform_fn = video.VideoGroupValTransform(size=224, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    clip_input = transform_fn(clip_input)
+    clip_input = np.stack(clip_input, axis=0)
+    clip_input = clip_input.reshape((-1,) + (36, 3, 224, 224))
+    clip_input = np.transpose(clip_input, (0, 2, 1, 3, 4))
+    return clip_input
+
 def plot_one_box(x, img, color=[100,100,100], text_info="None",
                  velocity=None, thickness=1, fontsize=0.5, fontthickness=1):
     # Plots one bounding box on image img
@@ -131,8 +172,8 @@ def save_yolopreds_tovideo(yolo_preds, id_to_ava_labels, color_map, output_video
 def main(config):
     device = config.device
     imsize = config.imsize
-    swim_list=deque()
-    
+    # swim_list=deque()
+    drown_list = deque()
     
     model = torch.hub.load('ultralytics/yolov5', 'yolov5l6').to(device)
     model.conf = config.conf
@@ -141,10 +182,13 @@ def main(config):
     if config.classes:
         model.classes = config.classes
     
-    video_model = slowfast_r50_detection(True).eval().to(device)
+    # video_model = slowfast_r50_detection(True).eval().to(device)
+    video_model = get_model(name='slowfast_4x16_resnet50_kinetics400', nclass=3)
+    video_model.load_parameters("net.params")
     
-    deepsort_tracker = DeepSort("deep_sort/deep_sort/deep/checkpoint/ckpt.t7")
-    ava_labelnames,_ = AvaLabeledVideoFramePaths.read_label_map("selfutils/temp.pbtxt")
+    deepsort_tracker = DeepSort("deep_sort/deep_sort/deep/checkpoint/ckpt.t7")    
+    # ava_labelnames,_ = AvaLabeledVideoFramePaths.read_label_map("selfutils/temp.pbtxt")
+    swim_labelnames,_ = AvaLabeledVideoFramePaths.read_label_map("selfutils/swim.pbtxt")
     coco_color_map = [[random.randint(0, 255) for _ in range(3)] for _ in range(80)]
 
     vide_save_path = config.output
@@ -155,7 +199,9 @@ def main(config):
     print("processing...")
     
     cap = MyVideoCapture(config.input)
-    id_to_ava_labels = {}
+    vr = decord.VideoReader(config.input)
+    # id_to_ava_labels = {}
+    id_to_swim_labels = {}
     a=time.time()
     while not cap.end:
         ret, img = cap.read()
@@ -172,39 +218,51 @@ def main(config):
             deepsort_outputs.append(temp.astype(np.float32))
             
         yolo_preds.pred=deepsort_outputs
-        
         if len(cap.stack) == 25:
             print(f"processing {cap.idx // 25}th second clips")
             clip = cap.get_video_clip()
             if yolo_preds.pred[0].shape[0]:
-                inputs, inp_boxes, _=ava_inference_transform(clip, yolo_preds.pred[0][:,0:4], crop_size=imsize)
-                inp_boxes = torch.cat([torch.zeros(inp_boxes.shape[0],1), inp_boxes], dim=1)
-                if isinstance(inputs, list):
-                    inputs = [inp.unsqueeze(0).to(device) for inp in inputs]
-                else:
-                    inputs = inputs.unsqueeze(0).to(device)
+                inputs = swim_inference_transform(clip, yolo_preds.pred[0][:,0:4], crop_size=imsize)
+                # inputs, inp_boxes, _=ava_inference_transform(clip, yolo_preds.pred[0][:,0:4], crop_size=imsize)
+                # inp_boxes = torch.cat([torch.zeros(inp_boxes.shape[0],1), inp_boxes], dim=1)
+                # if isinstance(inputs, list):
+                #     inputs = [inp.unsqueeze(0).to(device) for inp in inputs]
+                # else:
+                #     inputs = inputs.unsqueeze(0).to(device)
                 with torch.no_grad():
-                    slowfaster_preds = video_model(inputs, inp_boxes.to(device))
-                    slowfaster_preds = slowfaster_preds.cpu()
-                for tid,avalabel,location in zip(yolo_preds.pred[0][:,5].tolist(), np.argmax(slowfaster_preds, axis=1).tolist(), yolo_preds.pred[0][:,0:4]):
-                    id_to_ava_labels[tid] = ava_labelnames[avalabel+1]
+                    # slowfaster_preds = video_model(inputs, inp_boxes.to(device))
+                    slowfaster_preds = video_model(nd.array(inputs))
+                    # slowfaster_preds = slowfaster_preds.cpu()
+                # for tid,avalabel,location, pred in zip(yolo_preds.pred[0][:,5].tolist(), np.argmax(slowfaster_preds, axis=1).tolist(), yolo_preds.pred[0][:,0:4], slowfaster_preds):
+                for tid,location, pred in zip(yolo_preds.pred[0][:,5], yolo_preds.pred[0][:,0:4], slowfaster_preds):
+                    # id_to_ava_labels[tid] = ava_labelnames[avalabel+1]
+                    
+                    id_to_swim_labels[tid] = swim_labelnames[np.argmax(pred).asscalar()] # 객체 id와 행동라벨 매핑
                     d_code=False
-                    if ava_labelnames[avalabel+1]=='swim':
+                    # if ava_labelnames[avalabel+1]=='swim':
+                    if swim_labelnames[np.argmax(pred).asscalar()+1]=='drown':
                         #print(ava_labelnames[avalabel+1],location,datetime.datetime.now())
-                        if swim_list:
+                        # if swim_list:
+                        if drown_list:
                             center_x=int((int(location[0])+int(location[2]))/2)
                             center_y=int((int(location[1])+int(location[3]))/2)
-                            if (datetime.datetime.now()-swim_list[0][0]).seconds>60: #시간 지나면 삭제
-                                swim_list.popleft()
-                            for index,i in enumerate(swim_list):
-                                
+                            # if (datetime.datetime.now()-swim_list[0][0]).seconds>60: #시간 지나면 삭제
+                            if (datetime.datetime.now()-drown_list[0][0]).seconds>60: #시간 지나면 삭제
+                                # swim_list.popleft()
+                                drown_list.popleft()
+                            # for index,i in enumerate(swim_list):
+                            for index,i in enumerate(drown_list):    
                                 if center_x>=i[1][0] and center_x<=i[1][2] and center_y >=i[1][1] and center_y <=i[1][3]:
-                                    swim_list[index][2]+=1
-                                    if swim_list[index][2]==1:
+                                    # swim_list[index][2]+=1
+                                    drown_list[index][2]+=1
+                                    # if swim_list[index][2]==1:
+                                    if drown_list[index][2]==1:
                                         print('익사 1단계')
-                                    elif swim_list[index][2]==2:
+                                    # elif swim_list[index][2]==2:
+                                    elif drown_list[index][2]==2:
                                         print('익사 2단계')
-                                    elif swim_list[index][2]>=3:
+                                    # elif swim_list[index][2]>=3:
+                                    elif drown_list[index][2]>=3:
                                         print('익사 3단계')
                                     else:
                                         pass
@@ -213,15 +271,18 @@ def main(config):
                                 print('등록')
                                 find_x1, find_y1 = max(0,int(int(location[0])-(int(location[2])-int(location[0]))/2)), max(0,int(int(location[1])-(int(location[3])-int(location[1]))/2))
                                 find_x2, find_y2 = int(int(location[2])+(int(location[2])-int(location[0]))/2),int(int(location[3])+(int(location[3])-int(location[1]))/2)
-                                swim_list.append([datetime.datetime.now(),[find_x1,find_y1,find_x2, find_y2],0])
+                                # swim_list.append([datetime.datetime.now(),[find_x1,find_y1,find_x2, find_y2],0])
+                                drown_list.append([datetime.datetime.now(),[find_x1,find_y1,find_x2, find_y2],0])
                         else:
                             print('등록')
                             find_x1, find_y1 = max(0,int(int(location[0])-(int(location[2])-int(location[0]))/2)), max(0,int(int(location[1])-(int(location[3])-int(location[1]))/2))
                             find_x2, find_y2 = int(int(location[2])+(int(location[2])-int(location[0]))/2),int(int(location[3])+(int(location[3])-int(location[1]))/2)
-                            swim_list.append([datetime.datetime.now(),[find_x1,find_y1,find_x2, find_y2],0])
+                            # swim_list.append([datetime.datetime.now(),[find_x1,find_y1,find_x2, find_y2],0])
+                            drown_list.append([datetime.datetime.now(),[find_x1,find_y1,find_x2, find_y2],0])
 
-        save_yolopreds_tovideo(yolo_preds, id_to_ava_labels, coco_color_map, outputvideo, config.show)
-    print(swim_list)
+        # save_yolopreds_tovideo(yolo_preds, id_to_ava_labels, coco_color_map, outputvideo, config.show)
+        save_yolopreds_tovideo(yolo_preds, id_to_swim_labels, coco_color_map, outputvideo, config.show)
+    print(drown_list)
     print("total cost: {:.3f} s, video length: {} s".format(time.time()-a, cap.idx / 25))
     
     cap.release()
@@ -234,7 +295,7 @@ if __name__=="__main__":
     parser.add_argument('--input', type=str, default="./home/wufan/images/video/ahpuh.mp4", help='test imgs folder or video or camera')
     parser.add_argument('--output', type=str, default="output.mp4", help='folder to save result imgs, can not use input folder')
     # object detect config
-    parser.add_argument('--imsize', type=int, default=640, help='inference size (pixels)')
+    parser.add_argument('--imsize', type=int, default=1080, help='inference size (pixels)')
     parser.add_argument('--conf', type=float, default=0.4, help='object confidence threshold')
     parser.add_argument('--iou', type=float, default=0.4, help='IOU threshold for NMS')
     parser.add_argument('--device', default='cuda', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')

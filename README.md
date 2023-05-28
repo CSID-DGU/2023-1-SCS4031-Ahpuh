@@ -32,4 +32,6 @@ conda activate {name}
 pip install -r requirements.txt
 ```
 4. 모델 실행
+```
 python BackEnd/model/yolo_slowfast.py --input /path/to/test/video
+```

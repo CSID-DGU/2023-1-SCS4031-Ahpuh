@@ -13,6 +13,9 @@ from pytorchvideo.models.hub import slowfast_r50_detection
 from deep_sort.deep_sort import DeepSort
 import datetime
 from collections import deque
+import flask
+from flask import Flask, request, render_template, jsonify
+import types
 
 from gluoncv.model_zoo import get_model
 from gluoncv.utils.filesystem import try_import_decord
@@ -20,6 +23,7 @@ from gluoncv.data.transforms import video
 from mxnet import gluon, nd, init, context
 decord = try_import_decord()
 
+app = Flask(__name__)
 class MyVideoCapture:
     
     def __init__(self, source):
@@ -169,7 +173,22 @@ def save_yolopreds_tovideo(yolo_preds, id_to_ava_labels, color_map, output_video
             im=cv2.cvtColor(im,cv2.COLOR_RGB2BGR)
             cv2.imshow("demo", im)
 
+@app.route("/model", methods=['POST']) 
 def main(config):
+    config=types.SimpleNamespace()
+    if request.method=='POST':
+
+        file=request.files['video'] #파일 받기
+        file.save(os.path.join("./home/wufan/images/video/", file.filename))
+    config.input=os.path.join("./home/wufan/images/video/", file.filename)
+    config.output='output.mp4'
+    config.imsize=640
+    config.conf=0.4
+    config.iou=0.4
+    config.device='cpu'
+    config.show=False
+    config.classes=None
+
     device = config.device
     imsize = config.imsize
     # swim_list=deque()
@@ -291,21 +310,4 @@ def main(config):
     
     
 if __name__=="__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--input', type=str, default="./home/wufan/images/video/ahpuh.mp4", help='test imgs folder or video or camera')
-    parser.add_argument('--output', type=str, default="output.mp4", help='folder to save result imgs, can not use input folder')
-    # object detect config
-    parser.add_argument('--imsize', type=int, default=1080, help='inference size (pixels)')
-    parser.add_argument('--conf', type=float, default=0.4, help='object confidence threshold')
-    parser.add_argument('--iou', type=float, default=0.4, help='IOU threshold for NMS')
-    parser.add_argument('--device', default='cuda', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
-    parser.add_argument('--classes', nargs='+', type=int, help='filter by class: --class 0, or --class 0 2 3')
-    parser.add_argument('--show', action='store_true', help='show img')
-    config = parser.parse_args()
-    
-    if config.input.isdigit():
-        print("using local camera.")
-        config.input = int(config.input)
-        
-    print(config)
-    main(config)
+    app.run(host='0.0.0.0', port=8000, debug=True)

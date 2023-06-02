@@ -12,8 +12,6 @@ import com.example.ahpuh.util.BaseResponseStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 import static com.example.ahpuh.util.ValidationRegex.isRegexPhoneNum;
 
 @Service
@@ -45,6 +43,14 @@ public class UserService {
         user.modifyLecStatus(lectureReq.getLectureStatus());
         userRepository.save(user);
     }
+
+    public void deleteMember(Long userIdx) throws BaseException {
+        UserEntity user = userRepository.findByUserIdx(userIdx)
+                .orElseThrow(()-> new BaseException(BaseResponseStatus.NOT_FIND_USER));
+        user.deleteMember(" ", " ", null, "INACTIVE", "INACTIVE");
+        userRepository.save(user);
+    }
+
     public UserEntity createMember(AdminEntity admin, PostUserReq user){
         return UserEntity.builder()
                 .adminIdx(admin)

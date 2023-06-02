@@ -52,4 +52,13 @@ public class UserController {
         userService.modifyMemberStatus(userIdx, patchLectureReq);
         return new BaseResponse<>("수강 상태를 변경하였습니다.");
     }
+
+    @Operation(summary = "delete user info", description = "회원 삭제")
+    @ResponseBody
+    @DeleteMapping("/{userIdx}")
+    public BaseResponse<String> deleteMember(@PathVariable("userIdx") Long userIdx) throws BaseException {
+        AdminEntity admin = jwtService.getAdmin();
+        userService.deleteMember(userIdx);
+        return new BaseResponse<>("회원 삭제를 완료하였습니다.");
+    }
 }

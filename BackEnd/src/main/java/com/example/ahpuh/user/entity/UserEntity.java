@@ -65,4 +65,11 @@ public class UserEntity extends BaseTimeEntity {
     }
 
     public void modifyLecStatus(String lectureStatus) { this.lectureStatus = lectureStatus; };
+    public void deleteMember(String name, String phoneNum, String address, String lectureStatus, String status){
+        this.name = name;
+        this.phoneNum = phoneNum;
+        this.address = address;
+        this.lectureStatus = lectureStatus;
+        this.status = status;
+    }
 }

@@ -1,4 +1,4 @@
-package com.example.ahpuh.user;
+package com.example.ahpuh.user.repository;
 
 import com.example.ahpuh.user.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -47,10 +47,12 @@ public class UserEntity extends BaseTimeEntity {
     private String status;
 
     @Builder
-    public UserEntity(String name, String phoneNum, String lectureStatus, String status){
+    public UserEntity(AdminEntity adminIdx, String name, String phoneNum, String gender, String age, String address){
+        this.adminIdx = adminIdx;
         this.name = name;
         this.phoneNum = phoneNum;
-        this.lectureStatus = lectureStatus;
-        this.status = status;
+        this.gender = gender;
+        this.age = age;
+        this.address = address;
     }
 }

@@ -1,4 +1,4 @@
-package com.example.ahpuh.admin.dto;
+package com.example.ahpuh.cctv.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

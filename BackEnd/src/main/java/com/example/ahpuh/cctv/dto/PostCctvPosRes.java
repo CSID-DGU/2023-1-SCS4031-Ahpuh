@@ -1,6 +1,5 @@
-package com.example.ahpuh.admin.dto;
+package com.example.ahpuh.cctv.dto;
 
-import com.example.ahpuh.cctv.entity.PositionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

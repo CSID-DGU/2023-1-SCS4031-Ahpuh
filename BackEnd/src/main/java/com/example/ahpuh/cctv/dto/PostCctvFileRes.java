@@ -1,4 +1,4 @@
-package com.example.ahpuh.admin.dto;
+package com.example.ahpuh.cctv.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostLineReq {
-    private Long lineNum;
+public class PostCctvFileRes {
+    private String cctvImg;
 }

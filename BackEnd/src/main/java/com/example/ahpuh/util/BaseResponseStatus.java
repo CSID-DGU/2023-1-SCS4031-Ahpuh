@@ -20,6 +20,8 @@ public enum BaseResponseStatus {
     NOT_FIND_CCTV(false, 2011, "CCTV 정보를 찾을 수 없습니다."),
     INVALID_POS_NUM(false, 2012, "라인 개수와 맞는 좌표값을 입력해주세요."),
     EXIST_POSITION(false, 2023, "기존에 좌표를 선정하였습니다."),
+    NOT_FIND_USER(false, 2024, "회원 정보를 찾을 수 없습니다."),
+    INVALID_USER_PHONENUM(false, 2025, "유효하지 않은 전화번호입니다."),
 
     /*
      * 4000: [POST]

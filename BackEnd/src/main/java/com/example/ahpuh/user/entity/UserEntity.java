@@ -47,9 +47,28 @@ public class UserEntity extends BaseTimeEntity {
     private String status;
 
     @Builder
-    public UserEntity(String name, String phoneNum, String lectureStatus, String status){
+    public UserEntity(AdminEntity adminIdx, String name, String phoneNum, String gender, String age, String address){
+        this.adminIdx = adminIdx;
         this.name = name;
         this.phoneNum = phoneNum;
+        this.gender = gender;
+        this.age = age;
+        this.address = address;
+    }
+
+    public void modifyInfo(String name, String phoneNum, String gender, String age, String address){
+        this.name = name;
+        this.phoneNum = phoneNum;
+        this.gender = gender;
+        this.age = age;
+        this.address = address;
+    }
+
+    public void modifyLecStatus(String lectureStatus) { this.lectureStatus = lectureStatus; };
+    public void deleteMember(String name, String phoneNum, String address, String lectureStatus, String status){
+        this.name = name;
+        this.phoneNum = phoneNum;
+        this.address = address;
         this.lectureStatus = lectureStatus;
         this.status = status;
     }

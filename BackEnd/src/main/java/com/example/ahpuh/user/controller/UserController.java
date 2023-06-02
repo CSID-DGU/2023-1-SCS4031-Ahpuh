@@ -2,10 +2,7 @@ package com.example.ahpuh.user.controller;
 
 import com.example.ahpuh.admin.entity.AdminEntity;
 import com.example.ahpuh.jwt.service.JwtService;
-import com.example.ahpuh.user.dto.PatchLectureReq;
-import com.example.ahpuh.user.dto.PatchUserReq;
-import com.example.ahpuh.user.dto.PostUserReq;
-import com.example.ahpuh.user.dto.PostUserRes;
+import com.example.ahpuh.user.dto.*;
 import com.example.ahpuh.user.service.UserService;
 import com.example.ahpuh.util.BaseException;
 import com.example.ahpuh.util.BaseResponse;
@@ -14,6 +11,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -60,5 +59,23 @@ public class UserController {
         AdminEntity admin = jwtService.getAdmin();
         userService.deleteMember(userIdx);
         return new BaseResponse<>("회원 삭제를 완료하였습니다.");
+    }
+
+    @Operation(summary = "get member List", description = "회원 정보 리스트 조회")
+    @ResponseBody
+    @GetMapping("")
+    public BaseResponse<List<GetUserRes>> getMemberList() throws BaseException {
+        AdminEntity admin = jwtService.getAdmin();
+        List<GetUserRes> userList = userService.getMemberList(admin);
+        return new BaseResponse<>(userList);
+    }
+
+    @Operation(summary = "get member", description = "회원 정보 조회")
+    @ResponseBody
+    @GetMapping("/{userIdx}")
+    public BaseResponse<GetUserRes> getMember(@PathVariable("userIdx") Long userIdx) throws BaseException {
+        AdminEntity admin = jwtService.getAdmin();
+        GetUserRes user = userService.getMember(userIdx);
+        return new BaseResponse<>(user);
     }
 }

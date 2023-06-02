@@ -55,4 +55,14 @@ public class UserEntity extends BaseTimeEntity {
         this.age = age;
         this.address = address;
     }
+
+    public void modifyInfo(String name, String phoneNum, String gender, String age, String address){
+        this.name = name;
+        this.phoneNum = phoneNum;
+        this.gender = gender;
+        this.age = age;
+        this.address = address;
+    }
+
+    public void modifyLecStatus(String lectureStatus) { this.lectureStatus = lectureStatus; };
 }

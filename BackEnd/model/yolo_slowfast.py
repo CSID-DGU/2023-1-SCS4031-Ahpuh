@@ -16,6 +16,7 @@ from collections import deque
 import flask
 from flask import Flask, request, render_template, jsonify
 import types
+import boto3
 
 from gluoncv.model_zoo import get_model
 from gluoncv.utils.filesystem import try_import_decord
@@ -307,6 +308,26 @@ def main(config):
     cap.release()
     outputvideo.release()
     print('saved video to:', vide_save_path)
+
+    AWS_ACCESS_KEY_ID ="AKIARYH4BUPEG356Y673"
+    AWS_SECRET_ACCESS_KEY = "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"
+    AWS_DEFAULT_REGION = "ap-northeast-2"
+    client = boto3.client('s3',
+                        aws_access_key_id=AWS_ACCESS_KEY_ID,
+                        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                        region_name=AWS_DEFAULT_REGION
+                        )
+
+    file_name = 'output.mp4'     # 업로드할 파일 이름 
+    bucket = 's3seolgi'          #버켓 주소
+    key = 'output.mp4' # s3 파일 이미지
+
+    client.upload_file(file_name, bucket, key) #파일 저장
+    image_url = f'https://{bucket}.s3.{AWS_DEFAULT_REGION}.amazonaws.com/{key}'
+    data_ahpuh={'s3url':image_url}
+
+    return jsonify(data_ahpuh), 200
+
     
     
 if __name__=="__main__":

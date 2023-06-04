@@ -14,3 +14,4 @@
 *.ts
 *.webm
 *.ipynb_checkpoints*
+key.py

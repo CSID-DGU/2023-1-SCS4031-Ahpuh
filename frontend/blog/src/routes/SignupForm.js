@@ -5,8 +5,6 @@ import '../styles/SignupForm.css';
 
 function SignupForm() {
   let container = document.getElementById('container')
-
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmpassword, setConfirmPassword] = useState('');
@@ -60,6 +58,21 @@ function SignupForm() {
       navigate("/signup");
   };
 
+  const signUp = () => {
+      fetch('3.37.74.123/admin/sign-up', { //회원가입시 입력한 값들이 서버로 전송될 수 있는 주소
+        method: 'POST',
+        body: JSON.stringify({
+          "email": email,
+          "pwd" : password,
+          "poolName": name,
+          "poolNumber":number,
+          "poolAdress": adress
+        }),
+      })
+        .then(response => response.json())
+        .then(result => console.log('결과: ', result));
+  };
+
   return (
     <div className='wrapper'>
       <div class="title">
@@ -95,9 +108,7 @@ function SignupForm() {
                   <i class='bx bxs-lock-alt'></i>
                   <input type="text" placeholder="adress" value={adress} onChange={handleAdressChange}/>
                 </div>
-                <button>
-                  Sign up
-                </button>
+                <button onClick={signUp}>Sign up</button>
                 <p>
                   <span>
                     이미 가입하셨나요?

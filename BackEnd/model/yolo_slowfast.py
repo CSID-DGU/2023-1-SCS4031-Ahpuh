@@ -219,8 +219,9 @@ def main(config):
                 print(clip.shape)
                 inputs = swim_inference_transform(clip, yolo_preds.pred[0][:,0:4], crop_size=imsize)
                 with torch.no_grad():
-                    # 여기다가 결과별로 예측값얻도록 하는 코드 추가해야 함
-                    slowfaster_preds = video_model(nd.array(inputs))
+                    slowfaster_preds = []
+                    for inp in inputs:
+                        slowfaster_preds.append(video_model(nd.array(inp)))
                 for tid,location, pred in zip(yolo_preds.pred[0][:,5], yolo_preds.pred[0][:,0:4], slowfaster_preds):
                     now_label = np.argmax(pred).asscalar()+1
                     id_to_swim_labels[tid] = swim_labelnames[now_label] # 객체 id와 행동라벨 매핑

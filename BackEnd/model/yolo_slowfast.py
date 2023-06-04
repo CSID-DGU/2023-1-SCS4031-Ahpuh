@@ -22,6 +22,8 @@ from gluoncv.model_zoo import get_model
 from gluoncv.utils.filesystem import try_import_decord
 from gluoncv.data.transforms import video
 from mxnet import gluon, nd, init, context
+from key import *
+
 decord = try_import_decord()
 
 app = Flask(__name__)
@@ -309,9 +311,7 @@ def main(config):
     outputvideo.release()
     print('saved video to:', vide_save_path)
 
-    AWS_ACCESS_KEY_ID ="AKIARYH4BUPEG356Y673"
-    AWS_SECRET_ACCESS_KEY = "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"
-    AWS_DEFAULT_REGION = "ap-northeast-2"
+
     client = boto3.client('s3',
                         aws_access_key_id=AWS_ACCESS_KEY_ID,
                         aws_secret_access_key=AWS_SECRET_ACCESS_KEY,

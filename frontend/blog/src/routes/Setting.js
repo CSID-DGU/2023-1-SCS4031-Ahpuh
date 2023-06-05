@@ -9,6 +9,12 @@ function Setting(){
     const [points1, setPoints1] = useState([]);
     const [points2, setPoints2] = useState([]);
     const [points3, setPoints3] = useState([]);
+    const [line, setLine] = useState(1);
+    
+    const handleLineChange = (e) => {
+      setLine(e.target.value);
+      console.log(line);
+    }
 
 
     const handleImageChange1 = (e) => {
@@ -123,21 +129,22 @@ function Setting(){
         const imageRect = image.getBoundingClientRect();
         const offsetX = e.clientX - imageRect.left;
         const offsetY = e.clientY - imageRect.top;
-    
-        if (points1.length < 6) {
+
+        if (points1.length < 2*line) {
           const updatedPoints = [...points1, { x: offsetX, y: offsetY }];
           setPoints1(updatedPoints);
         } else {
           setPoints1([{ x: offsetX, y: offsetY }]);
         }
     };
+    
     const handleImageClick2 = (e) => {
         const image = e.target;
         const imageRect = image.getBoundingClientRect();
         const offsetX = e.clientX - imageRect.left;
         const offsetY = e.clientY - imageRect.top;
     
-        if (points2.length < 6) {
+        if (points2.length < 2*line) {
           const updatedPoints = [...points2, { x: offsetX, y: offsetY }];
           setPoints2(updatedPoints);
         } else {
@@ -150,17 +157,42 @@ function Setting(){
         const offsetX = e.clientX - imageRect.left;
         const offsetY = e.clientY - imageRect.top;
     
-        if (points3.length < 6) {
+        if (points3.length <  2*line) {
           const updatedPoints = [...points3, { x: offsetX, y: offsetY }];
           setPoints3(updatedPoints);
         } else {
           setPoints3([{ x: offsetX, y: offsetY }]);
         }
     };
+    const repeat = (line, point) => {
+      const arr = [];
+
+      for (let i = 0;i < line;i++ ){
+        arr.push(
+          <div>
+            <h3>{i+1}번 레인</h3>
+            <p>x1 : {point[2*i].x}, y1 : {point[2*i].y}, x2 : {point[2*i+1].x}, y2 : {point[2*i+1].y}</p>
+          </div>
+
+        )
+      }
+      return arr;
+    };
   
     return (
       <div>
         <h1>수영장 CCTV 설정</h1>
+        <div style={{display:"inline-block"}}>
+          <h2>라인 개수를 입력해주세요</h2>
+          <div className="form login">
+                <div class="input-group">
+                  <i class='bx bx-mail-send'></i>
+                  <input type="number" placeholder="개수" value={line} onChange={(e)=>{setLine(e.target.value);}}/>
+                </div>
+                <button>확인 </button>
+
+              </div>
+        </div>
         <div>
             <h2>1번 화면</h2>
             <div className={styles.screen}>
@@ -168,14 +200,9 @@ function Setting(){
                 <img src={selectedImage1} alt="업로드된 이미지" className={styles.screen} onClick={handleImageClick1} style={{ cursor: 'crosshair' }}/>}
             </div>
             <div>
-                {points1.length === 6 && (
+                {points1.length === 2*line && (
                 <div>
-                    <p>첫 번째 점: {points1[0].x}, {points1[0].y}</p>
-                    <p>두 번째 점: {points1[1].x}, {points1[1].y}</p>
-                    <p>세 번째 점: {points1[2].x}, {points1[2].y}</p>
-                    <p>네 번째 점: {points1[3].x}, {points1[3].y}</p>
-                    <p>다섯 번째 점: {points1[4].x}, {points1[4].y}</p>
-                    <p>여섯 번째 점: {points1[5].x}, {points1[5].y}</p>
+                    {repeat(line,points1)}
                 </div>
                 )}
             </div>
@@ -188,14 +215,9 @@ function Setting(){
                 <img src={selectedImage2} alt="업로드된 이미지" className={styles.screen} onClick={handleImageClick2} style={{ cursor: 'crosshair' }}/>}
             </div>
             <div>
-                {points2.length === 6 && (
+                {points2.length === 2*line && (
                 <div>
-                    <p>첫 번째 점: {points2[0].x}, {points2[0].y}</p>
-                    <p>두 번째 점: {points2[1].x}, {points2[1].y}</p>
-                    <p>세 번째 점: {points2[2].x}, {points2[2].y}</p>
-                    <p>네 번째 점: {points2[3].x}, {points2[3].y}</p>
-                    <p>다섯 번째 점: {points2[4].x}, {points2[4].y}</p>
-                    <p>여섯 번째 점: {points2[5].x}, {points2[5].y}</p>
+                    {repeat(line,points2)}
                 </div>
                 )}
             </div>
@@ -208,14 +230,9 @@ function Setting(){
                 <img src={selectedImage3} alt="업로드된 이미지" className={styles.screen} onClick={handleImageClick3} style={{ cursor: 'crosshair' }}/>}
                 </div>
                 <div>
-                    {points3.length === 6 && (
+                    {points3.length === 2*line && (
                     <div>
-                        <p>첫 번째 점: {points3[0].x}, {points3[0].y}</p>
-                        <p>두 번째 점: {points3[1].x}, {points3[1].y}</p>
-                        <p>세 번째 점: {points3[2].x}, {points3[2].y}</p>
-                        <p>네 번째 점: {points3[3].x}, {points3[3].y}</p>
-                        <p>다섯 번째 점: {points3[4].x}, {points3[4].y}</p>
-                        <p>여섯 번째 점: {points3[5].x}, {points3[5].y}</p>
+                      {repeat(line,points3)}
                     </div>
                     )}
                 </div>

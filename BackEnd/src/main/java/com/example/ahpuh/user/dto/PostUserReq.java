@@ -14,6 +14,6 @@ public class PostUserReq {
     private String phoneNum;
     private String gender;
     private String age;
-    private String address;
-    private String lectureStatus;
+    private String birth;
+    private String parentalContacts;
 }

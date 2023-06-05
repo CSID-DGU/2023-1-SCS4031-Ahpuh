@@ -33,21 +33,14 @@ public class UserService {
         if(!isRegexPhoneNum(userReq.getPhoneNum())){
             throw new BaseException(BaseResponseStatus.INVALID_USER_PHONENUM);
         }
-        user.modifyInfo(userReq.getName(), userReq.getPhoneNum(), userReq.getGender(), userReq.getAge(), userReq.getAddress());
-        userRepository.save(user);
-    }
-
-    public void modifyMemberStatus(Long userIdx, PatchLectureReq lectureReq) throws BaseException {
-        UserEntity user = userRepository.findByUserIdxAndStatus(userIdx, "ACTIVE")
-                .orElseThrow(()-> new BaseException(BaseResponseStatus.NOT_FIND_USER));
-        user.modifyLecStatus(lectureReq.getLectureStatus());
+        user.modifyInfo(userReq.getName(), userReq.getPhoneNum(), userReq.getAge(), userReq.getGender(), userReq.getBirth(), userReq.getParentalContacts());
         userRepository.save(user);
     }
 
     public void deleteMember(Long userIdx) throws BaseException {
         UserEntity user = userRepository.findByUserIdxAndStatus(userIdx, "ACTIVE")
                 .orElseThrow(()-> new BaseException(BaseResponseStatus.NOT_FIND_USER));
-        user.deleteMember(" ", " ", null, "INACTIVE", "INACTIVE");
+        user.deleteMember(" ", " ", null, "INACTIVE");
         userRepository.save(user);
     }
 
@@ -56,8 +49,8 @@ public class UserService {
                 .orElseThrow(()-> new BaseException(BaseResponseStatus.NOT_FIND_USER));
         List<GetUserRes> resList = new ArrayList<>();
         for (UserEntity i : userList){
-            GetUserRes user = new GetUserRes(i.getName(), i.getPhoneNum(), i.getGender(),
-                    i.getAge(), i.getAddress(), i.getLectureStatus());
+            GetUserRes user = new GetUserRes(i.getName(), i.getPhoneNum(), i.getAge(),
+                    i.getGender(), i.getBirth(), i.getParentalContacts());
             resList.add(user);
         }
         return resList;
@@ -66,8 +59,8 @@ public class UserService {
     public GetUserRes getMember(Long userIdx) throws BaseException {
         UserEntity user = userRepository.findByUserIdxAndStatus(userIdx, "ACTIVE")
                 .orElseThrow(()-> new BaseException(BaseResponseStatus.NOT_FIND_USER));
-        GetUserRes res = new GetUserRes(user.getName(), user.getPhoneNum(), user.getGender(),
-                user.getAge(), user.getAddress(), user.getLectureStatus());
+        GetUserRes res = new GetUserRes(user.getName(), user.getPhoneNum(), user.getAge(),
+                user.getGender(), user.getBirth(), user.getParentalContacts());
         return res;
     }
 
@@ -78,7 +71,8 @@ public class UserService {
                 .phoneNum(user.getPhoneNum())
                 .age(user.getAge())
                 .gender(user.getGender())
-                .address(user.getAddress())
+                .birth(user.getBirth())
+                .parentalContacts(user.getParentalContacts())
                 .build();
     }
 }

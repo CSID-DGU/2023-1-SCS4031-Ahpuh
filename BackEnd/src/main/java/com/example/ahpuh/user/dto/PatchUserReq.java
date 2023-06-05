@@ -12,7 +12,8 @@ import lombok.Setter;
 public class PatchUserReq {
     private String name;
     private String phoneNum;
-    private String gender;
     private String age;
-    private String address;
+    private String gender;
+    private String birth;
+    private String parentalContacts;
 }

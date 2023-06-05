@@ -42,16 +42,6 @@ public class UserController {
         return new BaseResponse<>("회원 정보 수정을 완료하였습니다.");
     }
 
-    @Operation(summary = "patch user info", description = "회원 수강 상태 수정")
-    @Parameter(name = "patchLectureReq", description = "회원 수강 상태", example = "INACTIVE")
-    @ResponseBody
-    @PatchMapping("/modifyLecStatus/{userIdx}")
-    public BaseResponse<String> modifyMemberStatus(@RequestBody PatchLectureReq patchLectureReq, @PathVariable("userIdx") Long userIdx) throws BaseException {
-        AdminEntity admin = jwtService.getAdmin();
-        userService.modifyMemberStatus(userIdx, patchLectureReq);
-        return new BaseResponse<>("수강 상태를 변경하였습니다.");
-    }
-
     @Operation(summary = "delete user info", description = "회원 삭제")
     @ResponseBody
     @DeleteMapping("/{userIdx}")

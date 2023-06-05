@@ -1,5 +1,6 @@
 package com.example.ahpuh.cctv.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,5 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostCctvPosRes {
+    @ApiModelProperty(example = "좌표 리스트")
     private List<PostCctvPosReq> posList;
 }

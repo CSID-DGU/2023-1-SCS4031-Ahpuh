@@ -65,4 +65,16 @@ public class CctvController {
         PostCctvPosRes posList = cctvService.uploadPos(admin, postCctvPosReq);
         return new BaseResponse<>(posList);
     }
+
+    // 테스트
+    @Operation(summary = "post cctv video test", description = "관리자 초기 설정 - cctv 비디오 업로드 테스트 api")
+    @Parameter(name = "video", description = "업로드할 cctv 이미지와 동영상", example = "cctv 이미지, 동영상")
+    @ApiOperation(value = "DL 영상 전달 API", notes ="")
+    @ResponseBody
+    @PostMapping("/video")
+    public BaseResponse<PostVideoRes> uploadVideo(@RequestPart(value = "video") MultipartFile video) throws BaseException, JsonProcessingException {
+        AdminEntity admin = jwtService.getAdmin();
+        PostVideoRes postVideoRes = cctvService.uploadVideo(admin, video);
+        return new BaseResponse<>(postVideoRes);
+    }
 }

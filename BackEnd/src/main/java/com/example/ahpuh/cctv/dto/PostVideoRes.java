@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostCctvLineRes {
-    @ApiModelProperty(example = "라인 개수")
-    private Long lineNum;
+public class PostVideoRes {
+    @ApiModelProperty(example = "s3에 업로드된 url")
+    private String s3url;
 }

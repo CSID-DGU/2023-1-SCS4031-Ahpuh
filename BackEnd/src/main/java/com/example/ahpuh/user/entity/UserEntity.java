@@ -32,36 +32,39 @@ public class UserEntity extends BaseTimeEntity {
     private String phoneNum;
 
     @Column(nullable = true)
-    private String gender;
-
-    @Column(nullable = true)
     private String age;
 
     @Column(nullable = true)
-    private String address;
+    private String gender;
 
-    @Column(columnDefinition = "varchar(10) default 'ACTIVE'")
-    private String lectureStatus;
+    @Column(nullable = true)
+    private String birth;
+
+    @Column(nullable = true)
+    private String parentalContacts;
 
     @Column(columnDefinition = "varchar(10) default 'ACTIVE'")
     private String status;
 
     @Builder
-    public UserEntity(AdminEntity adminIdx, String name, String phoneNum, String gender, String age, String address){
+    public UserEntity(AdminEntity adminIdx, String name, String phoneNum, String age, String gender, String birth, String parentalContacts){
         this.adminIdx = adminIdx;
         this.name = name;
         this.phoneNum = phoneNum;
-        this.gender = gender;
         this.age = age;
-        this.address = address;
+        this.gender = gender;
+        this.birth = birth;
+        this.parentalContacts = parentalContacts;
     }
 
-    public void modifyInfo(String name, String phoneNum, String gender, String age, String address){
+    public void modifyInfo(String name, String phoneNum, String age, String gender, String parentalContacts, String parentalContacts){
+        this.name = name;
         this.name = name;
         this.phoneNum = phoneNum;
-        this.gender = gender;
         this.age = age;
-        this.address = address;
+        this.gender = gender;
+        this.parentalContacts = parentalContacts;
+        this.parentalContacts = parentalContacts;
     }
 
     public void modifyLecStatus(String lectureStatus) { this.lectureStatus = lectureStatus; };
@@ -69,7 +72,6 @@ public class UserEntity extends BaseTimeEntity {
         this.name = name;
         this.phoneNum = phoneNum;
         this.address = address;
-        this.lectureStatus = lectureStatus;
         this.status = status;
     }
 }

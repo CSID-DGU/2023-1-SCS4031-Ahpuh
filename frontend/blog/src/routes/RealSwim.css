@@ -1,0 +1,11 @@
+.btn {
+    font-family: 'Noto Sans KR';
+    display: flex;
+    align-items: center;
+    font-size: '13px';
+    padding : '12px 24px';
+}
+  
+.btn img {
+    margin-right: 5px; /* 이미지와 텍스트 간격을 조절하기 위한 마진 값 */
+}

@@ -5,16 +5,16 @@
 
 #logo{
     width: 20%;
-    margin-top: 10%;
+    margin-top: 5%;
 }
 
 #aupuh{
-    font-size: 50px;
-    color: rgb(22, 52, 187);
+    font-family: 'JalnanOTF';
+    font-size: 100px;
+    color:#2F88FF;
+    text-align: center;
 }
-#main{
-    background-color: rgb(255, 255, 255);
-}
+
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -23,5 +23,24 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: white;
+}
+
+.btn {
+    font-family: 'Noto Sans KR';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 10px 40px;
+    margin-bottom : 5px;
+    border: 1px solid #b6b3b3;
+    border-radius: 4px;
+    background-color: #f1f0f0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bolder;
   }
   
+.btn:hover {
+    background-color: #b4d6fa;
+  }

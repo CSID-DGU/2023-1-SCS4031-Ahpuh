@@ -3,17 +3,21 @@
     background-color: white;
     padding: 15px 5px;
     text-align: right;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 .logo{
     text-align: left;
     float: left;
 }
 .navbarMenu{
+    font-family: 'Noto Sans KR';
     color: black;
     margin: 10px;
     text-decoration: none;
 }
 .Aupuh{
     font-size: large;
+    font-family: "JalnanOTF";
     font-weight: 15px;
+    
 }

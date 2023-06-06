@@ -98,12 +98,12 @@ def run_warp_optical_flow(vid_item, dev_id=0):
 
 def parse_args():
     parser = argparse.ArgumentParser(description='prepare Kinetics400 dataset')
-    parser.add_argument('--download_dir', type=str, default='/home/irteam/god2000sus-dcloud-dir/swim_dataset')
-    parser.add_argument('--src_dir', type=str, default='/home/irteam/god2000sus-dcloud-dir/swim_dataset/train')
-    parser.add_argument('--out_dir', type=str, default='/home/irteam/god2000sus-dcloud-dir/swim_dataset/rawframes_train')
-    parser.add_argument('--frame_path', type=str, default='/home/irteam/god2000sus-dcloud-dir/swim_dataset/rawframes_train')
-    parser.add_argument('--anno_dir', type=str, default='/home/irteam/god2000sus-dcloud-dir/swim_dataset/annotations')
-    parser.add_argument('--out_list_path', type=str, default='/home/irteam/god2000sus-dcloud-dir/swim_dataset')
+    parser.add_argument('--download_dir', type=str, default='/home/irteam/didwldn3032-dcloud-dir/didwldn3032/swim_dataset')
+    parser.add_argument('--src_dir', type=str, default='/home/irteam/didwldn3032-dcloud-dir/didwldn3032/swim_dataset/train')
+    parser.add_argument('--out_dir', type=str, default='/home/irteam/didwldn3032-dcloud-dir/didwldn3032/swim_dataset/rawframes_train')
+    parser.add_argument('--frame_path', type=str, default='/home/irteam/didwldn3032-dcloud-dir/didwldn3032/swim_dataset/rawframes_train')
+    parser.add_argument('--anno_dir', type=str, default='/home/irteam/didwldn3032-dcloud-dir/didwldn3032/swim_dataset/annotations')
+    parser.add_argument('--out_list_path', type=str, default='/home/irteam/didwldn3032-dcloud-dir/didwldn3032/swim_dataset')
     parser.add_argument('--level', type=int, choices=[1, 2], default=2)
     parser.add_argument('--num_worker', type=int, default=8)
     parser.add_argument('--flow_type', type=str, default=None, choices=[None, 'tvl1', 'warp_tvl1'])

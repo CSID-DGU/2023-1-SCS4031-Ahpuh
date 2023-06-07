@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import styles from './Setting.css';
+import '../styles/Setting.css';
 
 function Setting(){
     const [selectedImage1, setSelectedImage1] = useState(null);
@@ -166,16 +166,36 @@ function Setting(){
     };
     const repeat = (line, point) => {
       const arr = [];
-
+      const head = [];
+      const body = [];
+      head.push(
+          <thead>
+            <tr>
+                <th>line</th>
+                <th>x1</th>
+                <th>y1</th>
+                <th>x2</th>
+                <th>y2</th>
+            </tr>
+          </thead>
+      )
       for (let i = 0;i < line;i++ ){
-        arr.push(
-          <div>
-            <h3>{i+1}번 레인</h3>
-            <p>x1 : {point[2*i].x}, y1 : {point[2*i].y}, x2 : {point[2*i+1].x}, y2 : {point[2*i+1].y}</p>
-          </div>
-
+        body.push(
+          <tbody>
+            <td>{i+1}번 레인</td>
+            <td>{point[2*i].x}</td>
+            <td>{point[2*i].y}</td>
+            <td>{point[2*i+1].x}</td>
+            <td>{point[2*i+1].y}</td>
+          </tbody>
         )
       }
+      arr.push(
+        <table>
+          {head}
+          {body}
+        </table>
+      )
       return arr;
     };
   
@@ -183,21 +203,19 @@ function Setting(){
       <div>
         <h1>수영장 CCTV 설정</h1>
         <div style={{display:"inline-block"}}>
-          <h2>라인 개수를 입력해주세요</h2>
-          <div className="form login">
+          <h2 style={{diplay: "float"}}>라인 개수를 입력하세요 : </h2>
+          <div className="form login"style={{diplay: "float"}}>
                 <div class="input-group">
                   <i class='bx bx-mail-send'></i>
                   <input type="number" placeholder="개수" value={line} onChange={(e)=>{setLine(e.target.value);}}/>
                 </div>
-                <button>확인 </button>
-
               </div>
         </div>
         <div>
             <h2>1번 화면</h2>
-            <div className={styles.screen}>
+            <div >
                 {selectedImage1 && 
-                <img src={selectedImage1} alt="업로드된 이미지" className={styles.screen} onClick={handleImageClick1} style={{ cursor: 'crosshair' }}/>}
+                <img src={selectedImage1} alt="업로드된 이미지"  onClick={handleImageClick1} style={{ cursor: 'crosshair' }}/>}
             </div>
             <div>
                 {points1.length === 2*line && (
@@ -210,9 +228,9 @@ function Setting(){
         </div>
         <div>
             <h2>2번 화면</h2>
-            <div className={styles.screen}>
+            <div >
                 {selectedImage2 && 
-                <img src={selectedImage2} alt="업로드된 이미지" className={styles.screen} onClick={handleImageClick2} style={{ cursor: 'crosshair' }}/>}
+                <img src={selectedImage2} alt="업로드된 이미지"  onClick={handleImageClick2} style={{ cursor: 'crosshair' }}/>}
             </div>
             <div>
                 {points2.length === 2*line && (
@@ -225,9 +243,9 @@ function Setting(){
         </div>
         <div>
             <h2>3번 화면</h2>
-            <div className={styles.screen}>
+            <div>
                 {selectedImage3 && 
-                <img src={selectedImage3} alt="업로드된 이미지" className={styles.screen} onClick={handleImageClick3} style={{ cursor: 'crosshair' }}/>}
+                <img src={selectedImage3} alt="업로드된 이미지" onClick={handleImageClick3} style={{ cursor: 'crosshair' }}/>}
                 </div>
                 <div>
                     {points3.length === 2*line && (

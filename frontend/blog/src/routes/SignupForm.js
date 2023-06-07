@@ -79,7 +79,7 @@ function SignupForm() {
         <h1>회원가입</h1>
       </div>
 
-      <div className='container'>
+      <div className='container flex-col'>
         <div className="row">
           <div className="col align-items-center flex-col sign-up">
             <div className="form-wrapper align-items-center">
@@ -108,13 +108,14 @@ function SignupForm() {
                   <i class='bx bxs-lock-alt'></i>
                   <input type="text" placeholder="adress" value={adress} onChange={handleAdressChange}/>
                 </div>
-                <button onClick={signUp}>Sign up</button>
+                <button onClick={signUp}>회원 가입</button>
+                <br></br>
                 <p>
                   <span>
                     이미 가입하셨나요?
                   </span>
                   <div id="login">
-                    <button onClick={navigateLogin}>로그인</button>
+                    <button onClick={navigateLogin} st>로그인</button>
                   </div>
                 </p>
               </div>

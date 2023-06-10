@@ -98,12 +98,12 @@ def run_warp_optical_flow(vid_item, dev_id=0):
 
 def parse_args():
     parser = argparse.ArgumentParser(description='prepare Kinetics400 dataset')
-    parser.add_argument('--download_dir', type=str, default='/home/irteam/didwldn3032-dcloud-dir/didwldn3032/swim_dataset')
-    parser.add_argument('--src_dir', type=str, default='/home/irteam/didwldn3032-dcloud-dir/didwldn3032/swim_dataset/train')
-    parser.add_argument('--out_dir', type=str, default='/home/irteam/didwldn3032-dcloud-dir/didwldn3032/swim_dataset/rawframes_train')
-    parser.add_argument('--frame_path', type=str, default='/home/irteam/didwldn3032-dcloud-dir/didwldn3032/swim_dataset/rawframes_train')
-    parser.add_argument('--anno_dir', type=str, default='/home/irteam/didwldn3032-dcloud-dir/didwldn3032/swim_dataset/annotations')
-    parser.add_argument('--out_list_path', type=str, default='/home/irteam/didwldn3032-dcloud-dir/didwldn3032/swim_dataset')
+    parser.add_argument('--download_dir', type=str, default='/home/irteam/dcloud-global-dir/Ahpuh/swim_dataset')
+    parser.add_argument('--src_dir', type=str, default='/home/irteam/dcloud-global-dir/Ahpuh/swim_dataset/train')
+    parser.add_argument('--out_dir', type=str, default='/home/irteam/dcloud-global-dir/Ahpuh/swim_dataset/rawframes_train')
+    parser.add_argument('--frame_path', type=str, default='/home/irteam/dcloud-global-dir/Ahpuh/swim_dataset/rawframes_train')
+    parser.add_argument('--anno_dir', type=str, default='/home/irteam/dcloud-global-dir/Ahpuh/swim_dataset/annotations')
+    parser.add_argument('--out_list_path', type=str, default='/home/irteam/dcloud-global-dir/Ahpuh/swim_dataset')
     parser.add_argument('--level', type=int, choices=[1, 2], default=2)
     parser.add_argument('--num_worker', type=int, default=8)
     parser.add_argument('--flow_type', type=str, default=None, choices=[None, 'tvl1', 'warp_tvl1'])
@@ -421,7 +421,7 @@ def build_file_list(args):
             video_list = glob.glob(osp.join(args.frame_path, '*', '*'))
         frame_info = {osp.relpath(
             x.split('.')[0], args.frame_path): (x, -1, -1) for x in video_list}
-
+    
     if args.dataset == 'ucf101':
         split_tp = parse_ucf101_splits(args)
     elif args.dataset == 'kinetics400':
@@ -444,6 +444,7 @@ def build_file_list(args):
             with open(osp.join(out_path, filename), 'w') as f:
                 f.writelines(lists[0][1])
     else:
+        
         lists = build_split_list(split_tp[0], frame_info,
                                  shuffle=args.shuffle)
         filename = '{}_{}_list_{}.txt'.format(args.dataset,

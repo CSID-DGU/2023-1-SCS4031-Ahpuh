@@ -197,8 +197,8 @@ def main(config):
     if config.classes:
         model.classes = config.classes
     
-    video_model = get_model(name='slowfast_4x16_resnet50_kinetics400', nclass=3)
-    video_model.load_parameters("net.params")
+    video_model = get_model(name='slowfast_4x16_resnet50_kinetics400', nclass=4)
+    video_model.load_parameters("/home/irteam/dcloud-global-dir/Ahpuh/net.params")
     
     deepsort_tracker = DeepSort("BackEnd/model/deep_sort/deep_sort/deep/checkpoint/ckpt.t7")    
     swim_labelnames,_ = AvaLabeledVideoFramePaths.read_label_map("BackEnd/model/selfutils/swim.pbtxt")

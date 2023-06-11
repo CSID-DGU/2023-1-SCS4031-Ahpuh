@@ -47,4 +47,8 @@ public class CctvEntity extends BaseTimeEntity {
     public void uploadLine(Long lineNum){
         this.lineNum = lineNum;
     }
+
+    public void uploadVideo(String cctvFile){
+        this.cctvFile = cctvFile;
+    }
 }

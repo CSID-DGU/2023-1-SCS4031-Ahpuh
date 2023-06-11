@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 
+
 function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -15,15 +16,8 @@ function LoginForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // 로그인 요청 처리
-    // 이 부분에서 실제로 서버와 통신하여 로그인 처리를 수행합니다.
-    // 예시로는 간단히 콘솔에 로그인 정보를 출력하는 예시를 보여줍니다.
     console.log('Email:', email);
     console.log('Password:', password);
-
-    // 로그인 후에 필요한 처리를 수행합니다.
-    // 예를 들어, 로그인 성공 시에 다른 페이지로 이동하거나 상태를 업데이트하는 등의 작업을 수행할 수 있습니다.
   };
 
   const navigate = useNavigate();
@@ -31,15 +25,39 @@ function LoginForm() {
     navigate("/login");
   };
   const navigateSignup = () => {
-      navigate("/signup");
+    navigate("/signup");
+  };
+  const navigateMain = () => {
+    navigate("/realswim");
+};
+
+
+  const signIn = () => {
+    fetch('3.37.74.123/admin/sign-in', { 
+      method: 'POST',
+      body: JSON.stringify({
+        "email": email,
+        "pwd": password,
+      }),
+    })
+      .then(response => {
+        if (response.message === 'SUCCESS') {
+          window.localStorage.setItem('token',response.access_token);
+          navigateMain();
+        } else {
+          alert('아이디 또는 비밀번호가 일치하지 않습니다.');
+          console.log('Email:', email);
+          console.log('Password:', password);
+        }
+      });
   };
 
   return (
     <div className='wrapper'>
       <div class="title">
-        <h1>로그인</h1>
+        <h1 style={{fontFamily:"JalnanOTF"}}>로그인</h1>
+        <img id="logo" style={{marginTop: "0%"}} alt = "logo" src="img/aupuh_logo.png" />
       </div>
-
       <div className='container'>
         <div className="row">
           <div className="col align-items-center flex-col sign-up">
@@ -53,17 +71,17 @@ function LoginForm() {
                   <i class='bx bxs-lock-alt'></i>
                   <input type="password" placeholder="Password" value={password} onChange={handlePasswordChange}/>
                 </div>
-                <button>
-                  Login
-                </button>
-                <p>
+                <button onClick={signIn}>로그인 </button>
+                <div>
+                  <p>
                   <span>
                     회원이 아니신가요?
                   </span>
                   <div id="login">
-                    <button onClick={navigateSignup}>회원가입</button>
+                    <button onClick={navigateSignup}style={{padding :"5px"}}>회원가입</button>
                   </div>
-                </p>
+                  </p>  
+                </div>
               </div>
             </div>
           </div>

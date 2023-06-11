@@ -5,8 +5,6 @@ import '../styles/SignupForm.css';
 
 function SignupForm() {
   let container = document.getElementById('container')
-
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmpassword, setConfirmPassword] = useState('');
@@ -60,13 +58,28 @@ function SignupForm() {
       navigate("/signup");
   };
 
+  const signUp = () => {
+      fetch('3.37.74.123/admin/sign-up', { //회원가입시 입력한 값들이 서버로 전송될 수 있는 주소
+        method: 'POST',
+        body: JSON.stringify({
+          "email": email,
+          "pwd" : password,
+          "poolName": name,
+          "poolNumber":number,
+          "poolAdress": adress
+        }),
+      })
+        .then(response => response.json())
+        .then(result => console.log('결과: ', result));
+  };
+
   return (
     <div className='wrapper'>
       <div class="title">
         <h1>회원가입</h1>
       </div>
 
-      <div className='container'>
+      <div className='container flex-col'>
         <div className="row">
           <div className="col align-items-center flex-col sign-up">
             <div className="form-wrapper align-items-center">
@@ -95,15 +108,14 @@ function SignupForm() {
                   <i class='bx bxs-lock-alt'></i>
                   <input type="text" placeholder="adress" value={adress} onChange={handleAdressChange}/>
                 </div>
-                <button>
-                  Sign up
-                </button>
+                <button onClick={signUp}>회원 가입</button>
+                <br></br>
                 <p>
                   <span>
                     이미 가입하셨나요?
                   </span>
                   <div id="login">
-                    <button onClick={navigateLogin}>로그인</button>
+                    <button onClick={navigateLogin} st>로그인</button>
                   </div>
                 </p>
               </div>

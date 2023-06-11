@@ -1,4 +1,5 @@
 table, th, td {
+    font-family: 'Noto Sans KR';
     border: 1px solid black;
     border-collapse: collapse;
 }

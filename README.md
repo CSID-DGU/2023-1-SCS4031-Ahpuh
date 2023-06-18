@@ -13,19 +13,3 @@
 >- 2020112487 백채연 팀원 백엔드
 >
 >- 2019110500 안도현 팀원 딥러닝
-
-
-### 모델 데모 실행 방법
-0. `cd 2023-1-SCS4031-Ahpuh`
-1. deep sort의 pretrained 모델 준비 : [여기](https://drive.google.com/drive/folders/1xhG0kRH1EX5B9_Iz8gQJb7UNnn_riXi6)서 받거나, dcloud-global-dir에서 ckpt.t7 파일 가져와서 현재 디렉토리에 넣기
-2. slowfast의 pretrained 모델 준비 : dcloud-global-dir에서 net.params 파일 가져와서 현재 디렉토리에 넣기
-3. 가상환경 생성 & 패키지 설치
-```
-conda create -n {name} python=3.8
-conda activate {name}
-pip install -r requirements.txt
-```
-4. 모델 실행
-```
-python BackEnd/model/yolo_slowfast.py --input /path/to/test/video
-```

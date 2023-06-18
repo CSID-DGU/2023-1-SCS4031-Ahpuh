@@ -13,11 +13,24 @@ from pytorchvideo.models.hub import slowfast_r50_detection
 from deep_sort.deep_sort import DeepSort
 import datetime
 from collections import deque
+import flask
+from flask import Flask, request, render_template, jsonify
+import types
+import boto3
+import speech_recognition as sr
+from gtts import gTTS
+import os
+import time
+import playsound
+from datetime import datetime
+from ultralytics import YOLO
 
 from gluoncv.model_zoo import get_model
 from gluoncv.utils.filesystem import try_import_decord
 from gluoncv.data.transforms import video
 from mxnet import gluon, nd, init, context
+# from key import *
+
 decord = try_import_decord()
 from PIL import Image
 import cv2
@@ -26,6 +39,7 @@ from mxnet.gluon.data.vision import transforms
 import tensorflow as tf
 from tensorflow.keras.preprocessing import sequence
 
+app = Flask(__name__)
 class MyVideoCapture:
     
     def __init__(self, source):
@@ -140,7 +154,7 @@ def swim_inference_transform(
 
 
 def plot_one_box(x, img, color=[100,100,100], text_info="None",
-                 velocity=None, thickness=1, fontsize=0.5, fontthickness=1):
+                 velocity=None, thickness=1, fontsize=0.5, fontthickness=3):
     # Plots one bounding box on image img
     c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))
     c3=int((int(x[0])+int(x[2]))/2),int((int(x[1])+int(x[3]))/2)
@@ -154,6 +168,42 @@ def plot_one_box(x, img, color=[100,100,100], text_info="None",
                 cv2.FONT_HERSHEY_TRIPLEX, fontsize, [255,255,255], fontthickness)
     return img
 
+
+def plot_one_box2(box_list, img, color=[219,68,85], text_info="None", 
+                 velocity=None, thickness=1, fontsize=0.5, fontthickness=3):
+    # Plots one bounding box on image img
+
+    y0, dy = 10, 50
+    for i, line in enumerate(text_info.split('\n')):
+        y = y0 + i*dy
+        cv2.putText(img, line, (50, y ), cv2.FONT_HERSHEY_SIMPLEX,  1, (0,255,0), 2)
+    
+    for x in box_list:
+        c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))
+        c3=int((int(x[0])+int(x[2]))/2),int((int(x[1])+int(x[3]))/2)
+        c4, c5 = (max(0,int(int(x[0])-(int(x[2])-int(x[0]))/2)),max(0,int(int(x[1])-(int(x[3])-int(x[1]))/2))),(int(int(x[2])+(int(x[2])-int(x[0]))/2),int(int(x[3])+(int(x[3])-int(x[1]))/2))
+        cv2.rectangle(img, c4, c5, color, thickness, lineType=cv2.LINE_AA)
+#     cv2.putText(img, text_info,(10,10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
+
+    return img
+
+def speak(action):
+    if action=='falldown':
+        text="낙상 사고 발생하였습니다."
+    elif action=='diving':
+        text="다이빙 사고 발생하였습니다."
+    else:
+        pass
+    tts_ko = gTTS(text=text, lang='ko')
+    save_path=text+".mp3"
+    tts_ko.save(save_path)
+
+def speak_step(line,action,step):
+    text=str(line)+"번 라인에서 낙상 "+str(step)+"단계 발생하였습니다."
+    tts_ko = gTTS(text=text, lang='ko')
+    save_path=text+".mp3"
+    tts_ko.save(save_path)
+
 def deepsort_update(Tracker, pred, xywh, np_img):
     outputs = Tracker.update(xywh, pred[:,4:5],pred[:,5].tolist(),cv2.cvtColor(np_img,cv2.COLOR_BGR2RGB))
     return outputs
@@ -162,8 +212,9 @@ def deepsort_update(Tracker, pred, xywh, np_img):
 
 
 
-def save_yolopreds_tovideo(yolo_preds, id_to_swim_labels, color_map, output_video, vis=False):
-    for i, (im, pred) in enumerate(zip(yolo_preds.ims, yolo_preds.pred)):
+def save_yolopreds_tovideo(yolo_preds,yolo_preds2, id_to_swim_labels, color_map, output_video, cnt_sum, text_list, cnt_list, box_list, vis=False):
+    
+    for i, (im, pred, pred2) in enumerate(zip(yolo_preds.ims, yolo_preds.pred,yolo_preds2.pred)):
         im=cv2.cvtColor(im,cv2.COLOR_BGR2RGB)
         if pred.shape[0]:
             for j, (*box, cls, trackid, vx, vy) in enumerate(pred):
@@ -175,9 +226,33 @@ def save_yolopreds_tovideo(yolo_preds, id_to_swim_labels, color_map, output_vide
                     swim_label = 'Unknow'
                 text = '{} {} {}'.format(int(trackid),yolo_preds.names[int(cls)],swim_label)
                 color = color_map[int(cls)]
-                if yolo_preds.names[int(cls)]=='person':
+                if swim_label=='drown'and pred2[j][6]>=1:
+                    speak_step(int(pred2[j][7]),swim_label,int(pred2[j][6]))
                     im = plot_one_box(box,im,color,text)
-                    
+                    now = datetime.now()
+                    text_list.append(text+str(now))
+                    cnt_list.append(now)
+                    box_list.append(box)
+
+                elif swim_label in ['falldown','diving']:
+                    speak(swim_label)
+                    im = plot_one_box(box,im,color,text)
+                    now = datetime.now()
+                    text_list.append(text+str(now))
+                    cnt_list.append(now)
+                    box_list.append(box)
+
+                else:
+                    pass
+
+#                 if cnt_list:
+#                     im = plot_one_box(box_list,im,color,"\n".join(text_list))
+#                     if (datetime.now()-cnt_list[0]).seconds>10:
+#                         cnt_list.pop(0)
+#                         text_list.pop(0)
+#                         box_list.pop(0)      
+
+
         im = im.astype(np.uint8)
         im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
         output_video.write(im)
@@ -185,11 +260,29 @@ def save_yolopreds_tovideo(yolo_preds, id_to_swim_labels, color_map, output_vide
             im=cv2.cvtColor(im,cv2.COLOR_RGB2BGR)
             cv2.imshow("demo", im)
 
+def equation(line_num,line_col,x,y):
+    for i in range(line_num):
+        x_1,x_2,y_1,y_2=int(line_col[i][0][0]),int(line_col[i][1][0]),int(line_col[i][0][1]),int(line_col[i][1][1])
+        cent=(y_2-y_1)*(x-x_1)/(x_2-x_1)+y_1
+        if cent>=y:
+            return (i+1)
+        if i==(line_num-1):
+            return (i+1)
+
+@app.route("/model", methods=['POST']) 
 def main(config):
     device = config.device
     imsize = config.imsize
     drown_list = deque()
     
+    line_num=3
+    line_col=[[[683, 656.6875],[433, 559.6875]],[[895, 575.6875],[635, 524.6875]],[[939, 522.6875],[708, 489.6875]]]
+    
+    cnt_sum=0
+    text_list=[]
+    cnt_list=[]
+    box_list=[]
+
     model = torch.hub.load('ultralytics/yolov5', 'yolov5l6').to(device)
     model.conf = config.conf
     model.iou = config.iou
@@ -221,6 +314,9 @@ def main(config):
             continue
         yolo_preds=model([img], size=imsize)
         yolo_preds.files=["img.jpg"]
+
+        yolo_preds2=model([img], size=imsize)
+        yolo_preds2.files=["img.jpg"]
         
         deepsort_outputs=[]
         for j in range(len(yolo_preds.pred)):
@@ -230,6 +326,9 @@ def main(config):
             deepsort_outputs.append(temp.astype(np.float32))
             
         yolo_preds.pred=deepsort_outputs
+        yolo_preds2.pred=deepsort_outputs
+        yolo_preds2.pred[0][:,7]=0
+        yolo_preds2.pred[0][:,6]=0
         if len(cap.stack) == 64:
             print(f"processing {cap.idx // 64}th second clips")
             clip = cap.get_video_clip()
@@ -246,7 +345,7 @@ def main(config):
                         input = [input]
                         pred = video_model(nd.array(input))
                         slowfaster_preds.append(pred)
-                for tid,location, pred in zip(yolo_preds.pred[0][:,5], yolo_preds.pred[0][:,0:4], slowfaster_preds):
+                for y_index,(tid,location, pred) in enumerate(zip(yolo_preds.pred[0][:,5], yolo_preds.pred[0][:,0:4], slowfaster_preds)):
                     now_label = np.argmax(pred).asscalar()+1
                     id_to_swim_labels[tid] = swim_labelnames[now_label] # 객체 id와 행동라벨 매핑
                     d_code=False
@@ -255,17 +354,19 @@ def main(config):
                         if drown_list:
                             center_x=int((int(location[0])+int(location[2]))/2)
                             center_y=int((int(location[1])+int(location[3]))/2)
-                            if (datetime.datetime.now()-drown_list[0][0]).seconds>60: #시간 지나면 삭제
+                            if (datetime.now()-drown_list[0][0]).seconds>60: #시간 지나면 삭제
                                 drown_list.popleft()
                             for index,i in enumerate(drown_list):    
                                 if center_x>=i[1][0] and center_x<=i[1][2] and center_y >=i[1][1] and center_y <=i[1][3]:
                                     drown_list[index][2]+=1
+                                    yolo_preds2.pred[0][y_index][7]=drown_list[index][2]
+                                    yolo_preds2.pred[0][y_index][6]=equation(line_num,line_col,center_x,center_y)
                                     if drown_list[index][2]==1:
-                                        print('익사 1단계')
+                                        print(equation(line_num,line_col,center_x,center_y),"라인에서 익사 1단계 발생")
                                     elif drown_list[index][2]==2:
-                                        print('익사 2단계')
+                                        print(equation(line_num,line_col,center_x,center_y),"라인에서 익사 2단계 발생")
                                     elif drown_list[index][2]>=3:
-                                        print('익사 3단계')
+                                        print(equation(line_num,line_col,center_x,center_y),"라인에서 익사 3단계 발생")
                                     else:
                                         pass
                                     d_code=True
@@ -273,28 +374,46 @@ def main(config):
                                 print('등록')
                                 find_x1, find_y1 = max(0,int(int(location[0])-(int(location[2])-int(location[0]))/2)), max(0,int(int(location[1])-(int(location[3])-int(location[1]))/2))
                                 find_x2, find_y2 = int(int(location[2])+(int(location[2])-int(location[0]))/2),int(int(location[3])+(int(location[3])-int(location[1]))/2)
-                                drown_list.append([datetime.datetime.now(),[find_x1,find_y1,find_x2, find_y2],0])
+                                drown_list.append([datetime.now(),[find_x1,find_y1,find_x2, find_y2],0])
                         else:
                             print('등록')
                             find_x1, find_y1 = max(0,int(int(location[0])-(int(location[2])-int(location[0]))/2)), max(0,int(int(location[1])-(int(location[3])-int(location[1]))/2))
                             find_x2, find_y2 = int(int(location[2])+(int(location[2])-int(location[0]))/2),int(int(location[3])+(int(location[3])-int(location[1]))/2)
-                            drown_list.append([datetime.datetime.now(),[find_x1,find_y1,find_x2, find_y2],0])
+                            drown_list.append([datetime.now(),[find_x1,find_y1,find_x2, find_y2],0])
 
-        save_yolopreds_tovideo(yolo_preds, id_to_swim_labels, coco_color_map, outputvideo, config.show)
+
+        save_yolopreds_tovideo(yolo_preds,yolo_preds2, id_to_swim_labels, coco_color_map, outputvideo, cnt_sum, text_list, cnt_list, box_list, config.show)
     print(drown_list)
     print("total cost: {:.3f} s, video length: {} s".format(time.time()-a, cap.idx / 25))
     
     cap.release()
     outputvideo.release()
     print('saved video to:', vide_save_path)
+
+    data_ahpuh={'a':'b'}
+
+
+    # client = boto3.client('s3',
+    #                     aws_access_key_id=AWS_ACCESS_KEY_ID,
+    #                     aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+    #                     region_name=AWS_DEFAULT_REGION
+    #                     )
+
+    # file_name = 'output.mp4'     # 업로드할 파일 이름 
+    # key = 'output.mp4' # s3 파일 이미지
+
+    # client.upload_file(file_name, bucket, key) #파일 저장
+    # image_url = f'https://{bucket}.s3.{AWS_DEFAULT_REGION}.amazonaws.com/{key}'
+    # data_ahpuh={'s3url':image_url}
+
     
     
 if __name__=="__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input', type=str, default="./home/wufan/images/video/ahpuh.mp4", help='test imgs folder or video or camera')
+    parser.add_argument('--input', type=str, default="/home/irteam/dcloud-global-dir/Ahpuh/시연영상/시연7.mp4", help='test imgs folder or video or camera')
     parser.add_argument('--output', type=str, default="output.mp4", help='folder to save result imgs, can not use input folder')
     # object detect config
-    parser.add_argument('--imsize', type=int, default=1080, help='inference size (pixels)')
+    parser.add_argument('--imsize', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--conf', type=float, default=0.4, help='object confidence threshold')
     parser.add_argument('--iou', type=float, default=0.4, help='IOU threshold for NMS')
     parser.add_argument('--device', default='cuda', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')

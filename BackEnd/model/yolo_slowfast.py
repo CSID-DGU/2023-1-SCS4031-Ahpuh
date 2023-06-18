@@ -392,8 +392,6 @@ def main(config):
 
     data_ahpuh={'a':'b'}
 
-    # AWS_ACCESS_KEY = AKIARYH4BUPEHBAEPNX4
-    # AWS_SECRET_KEY = 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
 
     # client = boto3.client('s3',
     #                     aws_access_key_id=AWS_ACCESS_KEY_ID,
@@ -402,7 +400,6 @@ def main(config):
     #                     )
 
     # file_name = 'output.mp4'     # 업로드할 파일 이름 
-    # bucket = 's3seolgi'          #버켓 주소
     # key = 'output.mp4' # s3 파일 이미지
 
     # client.upload_file(file_name, bucket, key) #파일 저장

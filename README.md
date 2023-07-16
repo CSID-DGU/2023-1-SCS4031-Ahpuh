@@ -1,11 +1,11 @@
-# 🏊🏻‍♂️ 실내 수영장 안전 관리 시스템, 어푸
+# 실내 수영장 안전 관리 시스템, 어푸
 ![image](https://github.com/CSID-DGU/2023-1-SCS4031-Ahpuh/assets/77263479/c7180b68-7960-4a64-ad34-3b02d67a35d9)
 
 <br>
 
-## 프로젝트 소개
-최근 발생한 물놀이장 내 안전사고를 분석한 결과 물리적 충격은 약 80%였고, 그 중 *낙상, 부딪힘, 추락*이 가장 많습니다.
- 
+## 🏊🏻‍♂️ 프로젝트 소개
+
+최근 발생한 물놀이장 내 안전사고를 분석한 결과 물리적 충격은 약 80%였고 그 중 낙상, 부딪힘, 추락이 가장 많습니다.<br>
 또한 아파트 커뮤니티 시설과 같은 소규모 수영장의 경우 수상 안전요원의 배치가 필수가 아니기에 *예기치 못한 익수사고가 많이 발생*하며 안전요원의 부재시 즉각적인 대응이 어렵습니다.
 
 이에 따라 **AI 모델을 활용해 실시간 cctv 영상에서 안전 사고의 발생을 감지 후 단계적으로 위험 상황에 대응하는 서비스, 어푸**를 제작하였습니다. 
@@ -17,16 +17,7 @@
 
 <br>
 
-## 화면 구성
-| 실시간 CCTV 모니터링 페이지  |  CCTV 기본 설정 페이지   |
-| :-------------------------------------------: | :------------: |
-|  <img width="329" src="https://github.com/CSID-DGU/2023-1-SCS4031-Ahpuh/assets/77263479/7d7678a0-b013-497f-948b-93ea329c5f2c"/> |  <img width="329" src="https://github.com/CSID-DGU/2023-1-SCS4031-Ahpuh/assets/77263479/b0e9f8ce-bb46-47fc-b091-3bdbbfff043a"/>|  
-| 사고 감지 및 신고 페이지   |  회원 관리 페이지   |  
-| <img width="329" src="https://github.com/CSID-DGU/2023-1-SCS4031-Ahpuh/assets/77263479/533abf09-5ee5-4217-8550-b076731d1f89"/>   |  <img width="329" src="https://github.com/CSID-DGU/2023-1-SCS4031-Ahpuh/assets/77263479/0bfe4cba-5af4-4985-8757-5bda7edbefd3"/>     |
-
-<br>
-
-## 주요 기능
+## 💫 주요 기능
 ### 1️⃣ CCTV 화면 내 사고 감지
 - 자체 준비/기존 데이터를 학습한 AI 모델을 활용해 CCTV 화면 내 사고 상황 파악
 
@@ -41,13 +32,20 @@
 
 <br>
 
+## 🖥️ 화면 구성
+| 실시간 CCTV 모니터링 페이지  |  CCTV 기본 설정 페이지   |
+| :-------------------------------------------: | :------------: |
+|  <img width="329" src="https://github.com/CSID-DGU/2023-1-SCS4031-Ahpuh/assets/77263479/7d7678a0-b013-497f-948b-93ea329c5f2c"/> |  <img width="329" src="https://github.com/CSID-DGU/2023-1-SCS4031-Ahpuh/assets/77263479/b0e9f8ce-bb46-47fc-b091-3bdbbfff043a"/>|  
+| 사고 감지 및 신고 페이지   |  회원 관리 페이지   |  
+| <img width="329" src="https://github.com/CSID-DGU/2023-1-SCS4031-Ahpuh/assets/77263479/533abf09-5ee5-4217-8550-b076731d1f89"/>   |  <img width="329" src="https://github.com/CSID-DGU/2023-1-SCS4031-Ahpuh/assets/77263479/0bfe4cba-5af4-4985-8757-5bda7edbefd3"/>     |
 
-## Tech Stack
+<br>
+
+
+## 🔧 Tech Stack
 
 ### DL
-<img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white">
-<img src="https://img.shields.io/badge/pytorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white">
-<img src="https://img.shields.io/badge/flask-000000?style=for-the-badge&logo=flask&logoColor=white">
+<img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white"> <img src="https://img.shields.io/badge/pytorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white"> <img src="https://img.shields.io/badge/flask-000000?style=for-the-badge&logo=flask&logoColor=white">
 
 ### Frontend
 <img src="https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black">
